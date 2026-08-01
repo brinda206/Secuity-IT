@@ -142,17 +142,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const bodyContent = item.body && item.body.trim() ? item.body : item.excerpt;
 
+    const isAdmin = !!localStorage.getItem('adminToken');
+    const adminActionsHTML = isAdmin ? `
+      <div class="article-admin-actions" style="display:flex; gap:12px; margin-bottom: 24px;">
+        <button class="btn-secondary" id="artEditBtn" data-id="${item.id}">Modifier l'article</button>
+        <button class="btn-secondary" id="artDelBtn" data-id="${item.id}" style="color:var(--critical); border-color:var(--critical-bg);">Supprimer</button>
+      </div>
+    ` : '';
+
+    const shareBtnHTML = `
+      <button class="btn-secondary share-btn" id="artShareBtn" data-id="${item.id}" aria-label="Partager" title="Copier le lien" style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        Partager
+      </button>
+    `;
+
     root.innerHTML = `
+      ${adminActionsHTML}
       <div class="article-header">
         <span class="eyebrow ${pillClass}">
           <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>
           ${escapeHtml(catLabel)}
         </span>
         <h1>${escapeHtml(item.title)}</h1>
-        <div class="article-meta">
+        <div class="article-meta" style="display:flex; align-items:center; flex-wrap:wrap; gap:12px;">
           <span class="mono">${formatDateLong(item.date).toUpperCase()}</span>
           <span>·</span>
           <span>Reportage terrain</span>
+          ${shareBtnHTML}
         </div>
       </div>
       ${bannerHTML}
@@ -166,6 +183,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (item.mediaType === 'image' && item.gallery && item.gallery.length > 1) {
       initArticleCarousel();
+    }
+
+    // --- Événements ---
+    const shareBtn = document.getElementById('artShareBtn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          const orig = shareBtn.innerHTML;
+          shareBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copié !`;
+          setTimeout(() => shareBtn.innerHTML = orig, 2000);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    }
+
+    const delBtn = document.getElementById('artDelBtn');
+    if (delBtn) {
+      delBtn.addEventListener('click', async () => {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cet article définitivement ? (Les médias seront détruits)')) {
+          try {
+            const token = localStorage.getItem('adminToken');
+            const res = await fetch(`/api/reportages/${item.id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (!res.ok) throw new Error('Erreur lors de la suppression');
+            window.location.href = 'index.html';
+          } catch (e) {
+            alert(e.message);
+          }
+        }
+      });
+    }
+
+    const editBtn = document.getElementById('artEditBtn');
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        window.location.href = `index.html?edit=${item.id}`;
+      });
     }
   }
 

@@ -34,7 +34,7 @@
         <a href="a-propos.html">À propos</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-btn" aria-label="Rechercher">
+        <button class="icon-btn" id="headerSearchBtn" aria-label="Rechercher">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="7" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -223,183 +223,47 @@
     </section>
 
     <section class="wrap">
-      <div class="filters" id="filters">
-        <button class="chip active" data-filter="all">Toutes les actualités</button>
-        <button class="chip" data-filter="interventions">Interventions</button>
-        <button class="chip" data-filter="reportage-terrain">seminaire terrain</button>
-        <button class="chip" data-filter="cybercriminalite">Cybercriminalité</button>
-        <button class="chip" data-filter="vulnerabilites">Vulnérabilités</button>
-        <button class="chip" data-filter="defense">Défense &amp; bonnes pratiques</button>
-        <button class="chip" data-filter="vie-privee">Vie privée</button>
-        <button class="chip" data-filter="reglementation">Réglementation</button>
+      <div class="filters-container"
+        style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+        <div class="filters" id="filters" style="margin-bottom: 0;">
+          <button class="chip active" data-filter="all">Toutes les actualités</button>
+          <button class="chip" data-filter="interventions">Interventions</button>
+          <button class="chip" data-filter="reportage-terrain">seminaire terrain</button>
+          <button class="chip" data-filter="cybercriminalite">Cybercriminalité</button>
+          <button class="chip" data-filter="vulnerabilites">Vulnérabilités</button>
+          <button class="chip" data-filter="defense">Défense &amp; bonnes pratiques</button>
+          <button class="chip" data-filter="vie-privee">Vie privée</button>
+          <button class="chip" data-filter="reglementation">Réglementation</button>
+        </div>
+        <div class="search-bar" style="position: relative; flex-grow: 1; max-width: 300px;">
+          <input type="text" id="searchInput" placeholder="Rechercher un article..." autocomplete="off"
+            style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);">
+          <svg
+            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); pointer-events: none;"
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <div id="searchSuggestions" class="suggestions-box"
+            style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; max-height: 200px; overflow-y: auto;">
+          </div>
+        </div>
       </div>
 
       <div class="main-layout">
         <div class="articles-grid" id="articlesGrid">
+          <!-- État vide (caché par défaut) -->
+          <div id="emptyState" class="empty-state hidden">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <h3>Aucune menace détectée</h3>
+            <p>Aucun article ne correspond à votre recherche ou filtre actuel.</p>
+          </div>
+
           <!-- Les reportages terrain (photos/vidéos) publiés via le formulaire ou
-             chargés depuis l'API sont insérés ici dynamiquement par js/app.js -->
-
-          <a href="article.html?id=phishing-bancaire-mobile" class="card has-media" data-category="cybercriminalite">
-            <div class="card-media">
-              <img src="assets/cyber_phishing.png" alt="Phishing bancaire mobile">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z" />
-                  </svg></div>
-                <span class="tag-pill critical">Critique</span>
-              </div>
-              <h3>Recrudescence des attaques par hameçonnage ciblant les services bancaires mobiles</h3>
-              <p class="excerpt">Des faux SMS imitant les banques francophones incitent les usagers à valider des
-                transactions frauduleuses en quelques secondes.</p>
-              <div class="tag-row"><span>21 JUIL. 2026</span><span>5 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=correctif-urgence-bibliotheque-compression" class="card has-media"
-            data-category="vulnerabilites">
-            <div class="card-media">
-              <img src="assets/cyber_code.png" alt="Correctif d'urgence">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    <path d="M9.5 12l1.8 1.8L15 10" />
-                  </svg></div>
-                <span class="tag-pill warning">Élevé</span>
-              </div>
-              <h3>Correctif d'urgence publié pour une bibliothèque de compression très utilisée</h3>
-              <p class="excerpt">La faille permettait une exécution de code à distance sur les serveurs n'ayant pas
-                appliqué la dernière mise à jour.</p>
-              <div class="tag-row"><span>20 JUIL. 2026</span><span>4 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=guide-segmentation-reseau-domestique" class="card has-media" data-category="defense">
-            <div class="card-media">
-              <img src="assets/cyber_network.png" alt="Guide segmentation réseau">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <rect x="3" y="11" width="18" height="10" rx="2" />
-                    <path d="M7 11V7a5 5 0 0110 0v4" />
-                  </svg></div>
-                <span class="tag-pill safe">Bonne pratique</span>
-              </div>
-              <h3>Guide pratique&nbsp;: segmenter son réseau domestique en cinq étapes simples</h3>
-              <p class="excerpt">Séparer objets connectés, invités et postes de travail réduit fortement la surface
-                d'attaque en cas de compromission.</p>
-              <div class="tag-row"><span>19 JUIL. 2026</span><span>6 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=courtier-donnees-localisation" class="card has-media" data-category="vie-privee">
-            <div class="card-media">
-              <img src="assets/cyber_shield.png" alt="Courtier en données">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <circle cx="12" cy="12" r="3" />
-                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
-                  </svg></div>
-                <span class="tag-pill info">Vie privée</span>
-              </div>
-              <h3>Un courtier en données épinglé pour revente d'historiques de localisation</h3>
-              <p class="excerpt">L'enquête révèle que des applications gratuites transmettaient des positions précises à
-                des tiers publicitaires.</p>
-              <div class="tag-row"><span>18 JUIL. 2026</span><span>5 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=notification-incidents-24h" class="card has-media" data-category="reglementation">
-            <div class="card-media">
-              <img src="assets/cyber_shield.png" alt="Notification incidents">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <path d="M12 3l2 4 4 .6-3 3 .7 4.4-3.7-2-3.7 2 .7-4.4-3-3 4-.6z" />
-                  </svg></div>
-                <span class="tag-pill info">Réglementation</span>
-              </div>
-              <h3>Nouvelle obligation de notification des incidents sous 24 heures pour les opérateurs critiques</h3>
-              <p class="excerpt">Le texte impose un signalement accéléré aux autorités compétentes dès la détection d'une
-                compromission avérée.</p>
-              <div class="tag-row"><span>17 JUIL. 2026</span><span>4 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=fraude-facture-fournisseurs-industriels" class="card has-media"
-            data-category="cybercriminalite">
-            <div class="card-media">
-              <img src="assets/cyber_phishing.png" alt="Fraude facture fournisseurs">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <rect x="4" y="4" width="16" height="16" rx="2" />
-                    <path d="M9 9h.01M15 9h.01M9 15c1 1 5 1 6 0" />
-                  </svg></div>
-                <span class="tag-pill warning">Élevé</span>
-              </div>
-              <h3>Un réseau de fraude à la facture usurpe l'identité de fournisseurs industriels</h3>
-              <p class="excerpt">Les cybercriminels interceptent des échanges de courriels pour rediriger discrètement des
-                paiements vers de faux comptes.</p>
-              <div class="tag-row"><span>16 JUIL. 2026</span><span>5 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=objets-connectes-mot-de-passe-defaut" class="card has-media" data-category="vulnerabilites">
-            <div class="card-media">
-              <img src="assets/cyber_code.png" alt="Objets connectés">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <rect x="3" y="11" width="18" height="10" rx="2" />
-                    <path d="M7 11V7a5 5 0 0110 0v4" />
-                    <circle cx="12" cy="16" r="1.4" />
-                  </svg></div>
-                <span class="tag-pill critical">Critique</span>
-              </div>
-              <h3>Des objets connectés domestiques exposés par un mot de passe par défaut non modifiable</h3>
-              <p class="excerpt">Un fabricant reconnaît qu'une partie de son parc de caméras reste accessible via des
-                identifiants codés en dur.</p>
-              <div class="tag-row"><span>15 JUIL. 2026</span><span>3 min</span></div>
-            </div>
-          </a>
-
-          <a href="article.html?id=gestionnaire-mots-de-passe-rentable" class="card has-media" data-category="defense">
-            <div class="card-media">
-              <img src="assets/cyber_shield.png" alt="Gestionnaire de mots de passe">
-            </div>
-            <div class="card-body">
-              <div class="card-top">
-                <div class="cat-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.8">
-                    <path d="M4 12a8 8 0 0116 0" />
-                    <path d="M12 12l4-2" />
-                    <circle cx="12" cy="12" r="1.5" />
-                  </svg></div>
-                <span class="tag-pill safe">Bonne pratique</span>
-              </div>
-              <h3>Pourquoi un gestionnaire de mots de passe reste la mesure la plus rentable</h3>
-              <p class="excerpt">Comparatif des solutions grand public et conseils pour migrer une équipe sans perturber
-                les habitudes de travail.</p>
-              <div class="tag-row"><span>14 JUIL. 2026</span><span>6 min</span></div>
-            </div>
-          </a>
+               chargés depuis l'API sont insérés ici dynamiquement par js/app.js -->
 
         </div>
 
@@ -483,9 +347,18 @@
       </div>
       <div class="footer-bottom">
         <span>© 2026 Security IT. Contenus fournis à titre informatif uniquement.</span>
+        <span class="credit">Conçu avec précision par <a href="https://LaboGraphie.vercel.app" target="_blank"
+            rel="noopener noreferrer">LaboGraphie</a></span>
       </div>
     </div>
   </footer>
+
+  <!-- Bouton remonter -->
+  <button id="scrollTopBtn" class="scroll-top-btn hidden" aria-label="Remonter en haut">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
 
   <!-- Visionneuse plein écran : s'ouvre au clic sur une vignette photo ou vidéo -->
   <div class="lightbox" id="lightbox">
@@ -585,6 +458,78 @@
         <div class="form-actions">
           <button type="button" class="btn-ghost" id="publishCancel">Annuler</button>
           <button type="submit" class="btn-primary" id="publishSubmit">Publier le reportage</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Formulaire de modification d'un reportage -->
+  <div class="modal-overlay" id="editOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="modal-header">
+        <h3 id="editTitle">Modifier l'article</h3>
+        <button class="icon-btn" id="editClose" aria-label="Fermer le formulaire">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="editForm" class="publish-form" novalidate>
+        <input type="hidden" id="eId" name="id">
+        <div class="form-row">
+          <label for="eTitle">Titre</label>
+          <input type="text" id="eTitle" name="title" required maxlength="120">
+        </div>
+
+        <div class="form-row two-col">
+          <div>
+            <label for="eCategory">Catégorie</label>
+            <select id="eCategory" name="category" required>
+              <option value="reportage-terrain">seminaire terrain</option>
+              <option value="interventions">Intervention Security IT</option>
+              <option value="cybercriminalite">Cybercriminalité</option>
+              <option value="vulnerabilites">Vulnérabilités</option>
+              <option value="defense">Défense &amp; bonnes pratiques</option>
+              <option value="vie-privee">Vie privée</option>
+              <option value="reglementation">Réglementation</option>
+            </select>
+          </div>
+          <div>
+            <label for="eDate">Date</label>
+            <input type="date" id="eDate" name="date" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="eExcerpt">Résumé</label>
+          <textarea id="eExcerpt" name="excerpt" rows="2" required maxlength="280"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="eBody">Texte complet</label>
+          <textarea id="eBody" name="body" rows="5" maxlength="4000"></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="eCaption">Légende visionneuse</label>
+          <input type="text" id="eCaption" name="caption" maxlength="160">
+        </div>
+
+        <div class="form-row">
+          <label for="eMedia" style="display:flex; justify-content:space-between;">
+            Nouveau média (Optionnel)
+            <span style="font-size:11px; color:var(--ink-faint); font-weight:normal;">Remplacera l'ancien</span>
+          </label>
+          <input type="file" id="eMedia" name="media" accept="image/*,video/*">
+        </div>
+
+        <div class="form-feedback" id="editFeedback" role="status"></div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="editCancel">Annuler</button>
+          <button type="submit" class="btn-primary" id="editSubmit">Enregistrer les modifications</button>
         </div>
       </form>
     </div>

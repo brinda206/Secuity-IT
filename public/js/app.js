@@ -60,55 +60,204 @@ document.addEventListener('DOMContentLoaded', () => {
   const menuToggle = document.querySelector('.menu-toggle');
   const mainNav = document.querySelector('.main-nav');
   menuToggle?.addEventListener('click', () => {
-    const isOpen = mainNav.style.display === 'flex';
-    mainNav.style.display = isOpen ? 'none' : 'flex';
-    mainNav.style.cssText += isOpen
-      ? ''
-      : 'position:absolute; top:72px; left:0; right:0; flex-direction:column; background:var(--surface); padding:12px 24px; border-bottom:1px solid var(--line); align-items:flex-start;';
+    mainNav?.classList.toggle('open');
   });
 
-  /* ===================== FILTRES PAR CATÉGORIE ===================== */
+  /* ===================== FILTRES & RECHERCHE ===================== */
   const chips = document.querySelectorAll('.chip');
   let currentFilter = 'all';
+  let currentSearchQuery = '';
 
-  function applyFilter(filter) {
-    currentFilter = filter;
-    document.querySelectorAll('.card').forEach(card => {
-      const show = filter === 'all' || card.dataset.category === filter;
-      card.style.display = show ? '' : 'none';
+  function applyFilter() {
+    const q = currentSearchQuery.toLowerCase();
+    let visibleCount = 0;
+    
+    document.querySelectorAll('#articlesGrid .card').forEach(card => {
+      const textContent = card.textContent.toLowerCase();
+      const matchCategory = currentFilter === 'all' || card.dataset.category === currentFilter;
+      const matchSearch = !q || textContent.includes(q);
+      const isVisible = matchCategory && matchSearch;
+      
+      card.style.display = isVisible ? '' : 'none';
+      if (isVisible) visibleCount++;
     });
+
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState) {
+      if (visibleCount === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+    }
   }
 
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
       chips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-      applyFilter(chip.dataset.filter);
+      currentFilter = chip.dataset.filter;
+      applyFilter();
+      updateNavActive(currentFilter);
     });
   });
 
-  // Applique le filtre demandé via l'URL (ex. lien "Interventions" du menu : ?filter=interventions)
+  /* --- Synchronisation du Menu Principal avec les Filtres --- */
+  const navLinks = document.querySelectorAll('.main-nav a');
+  
+  function updateNavActive(filterName) {
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      const href = link.getAttribute('href');
+      if (filterName === 'all' && (href === '#' || href === 'index.html')) {
+        link.classList.add('active');
+      } else if (href && href.includes(`filter=${filterName}`)) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      // On intercepte les liens de filtrage pour éviter de recharger la page
+      if (href === '#' || (href && href.includes('filter='))) {
+        e.preventDefault();
+        
+        let targetFilter = 'all';
+        if (href !== '#' && href.includes('filter=')) {
+          const url = new URL(link.href, window.location.origin);
+          targetFilter = url.searchParams.get('filter') || 'all';
+        }
+        
+        // Met à jour les puces de catégories
+        const targetChip = [...chips].find(c => c.dataset.filter === targetFilter);
+        if (targetChip) {
+          chips.forEach(c => c.classList.remove('active'));
+          targetChip.classList.add('active');
+        }
+        
+        // Applique le filtre
+        currentFilter = targetFilter;
+        applyFilter();
+        updateNavActive(targetFilter);
+        
+        // Ferme le menu mobile si ouvert
+        document.querySelector('.main-nav')?.classList.remove('open');
+        
+        // Défile vers la grille d'articles
+        document.getElementById('filters')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Applique le filtre demandé via l'URL
   const urlFilter = new URLSearchParams(window.location.search).get('filter');
   if (urlFilter) {
     const targetChip = [...chips].find(c => c.dataset.filter === urlFilter);
     if (targetChip) {
       chips.forEach(c => c.classList.remove('active'));
       targetChip.classList.add('active');
-      applyFilter(urlFilter);
+      currentFilter = urlFilter;
+      applyFilter();
+      updateNavActive(urlFilter);
     }
+  }
+
+  /* --- Recherche avec Autocomplétion --- */
+  const searchInput = document.getElementById('searchInput');
+  const searchSuggestions = document.getElementById('searchSuggestions');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentSearchQuery = e.target.value.trim();
+      applyFilter();
+
+      // Autocomplétion visuelle
+      const q = currentSearchQuery.toLowerCase();
+      if (!q) {
+        searchSuggestions.style.display = 'none';
+        return;
+      }
+
+      // On cherche les titres qui correspondent
+      const cards = Array.from(document.querySelectorAll('#articlesGrid .card'));
+      const matches = cards
+        .map(card => card.querySelector('h3 a')?.textContent || '')
+        .filter(title => title.toLowerCase().includes(q))
+        .slice(0, 5); // top 5
+
+      if (matches.length > 0) {
+        searchSuggestions.innerHTML = matches.map(m => 
+          `<div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 0.9rem;" 
+                onmouseover="this.style.background='var(--line)'" 
+                onmouseout="this.style.background='transparent'"
+                onclick="document.getElementById('searchInput').value = this.innerText; document.getElementById('searchInput').dispatchEvent(new Event('input')); document.getElementById('searchSuggestions').style.display='none';">
+            ${escapeHtml(m)}
+          </div>`
+        ).join('');
+        searchSuggestions.style.display = 'block';
+      } else {
+        searchSuggestions.style.display = 'none';
+      }
+    });
+
+    // Fermer les suggestions si on clique ailleurs
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-bar')) {
+        searchSuggestions.style.display = 'none';
+      }
+    });
+
+    // Branchement du bouton de la barre de navigation
+    const headerSearchBtn = document.getElementById('headerSearchBtn');
+    headerSearchBtn?.addEventListener('click', () => {
+      // Défilement jusqu'à la barre de recherche
+      searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Petit délai pour laisser le scroll se faire avant de donner le focus
+      setTimeout(() => searchInput.focus(), 300);
+    });
   }
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closePublishModal();
   });
 
-  /* ===================== NEWSLETTER (démo front uniquement) ===================== */
+  /* ===================== NEWSLETTER ===================== */
   const newsletterForm = document.getElementById('newsletterForm');
   const confirmMsg = document.getElementById('confirmMsg');
-  newsletterForm?.addEventListener('submit', (e) => {
+  newsletterForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    confirmMsg.style.display = 'inline';
-    newsletterForm.querySelector('input').value = '';
+    const input = newsletterForm.querySelector('input');
+    const submitBtn = newsletterForm.querySelector('button');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Inscription...';
+    confirmMsg.style.display = 'none';
+    
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: input.value })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) throw new Error(data.error || "Erreur lors de l'inscription");
+      
+      confirmMsg.textContent = data.message;
+      confirmMsg.style.color = 'var(--safe)';
+      confirmMsg.style.display = 'block';
+      input.value = '';
+    } catch (err) {
+      confirmMsg.textContent = err.message;
+      confirmMsg.style.color = 'var(--critical)';
+      confirmMsg.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
   });
 
   /* ===================== REPORTAGES TERRAIN : CHARGEMENT + RENDU ===================== */
@@ -156,10 +305,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const caption = escapeHtml(item.caption || '');
     const dateLabel = formatDate(item.date);
 
+    const adminActionsHTML = `
+      <div class="admin-actions hidden">
+        <button class="admin-action-btn edit-btn" data-id="${item.id}" aria-label="Modifier" title="Modifier cet article">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+        <button class="admin-action-btn delete-btn" data-id="${item.id}" aria-label="Supprimer" title="Supprimer cet article">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </div>
+    `;
+
     if (item.mediaType === 'video') {
       const poster = item.posterUrl || '';
       return `
         <div class="card has-media" data-category="${safeCategory}">
+          ${adminActionsHTML}
           <div class="card-media" data-lightbox="video" data-src="${item.mediaUrl}" data-caption="${caption}">
             <span class="media-type-badge">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
@@ -178,7 +339,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="card-top"><span class="tag-pill ${pillClass}">${catLabel}</span></div>
             <h3><a href="article.html?id=${item.id}">${title}</a></h3>
             <p class="excerpt">${excerpt}</p>
-            <div class="tag-row"><span>${dateLabel}</span><span>Vidéo</span></div>
+            <div class="tag-row">
+              <span>${dateLabel}</span><span>Vidéo</span>
+              <button class="share-btn" data-id="${item.id}" aria-label="Partager" title="Copier le lien"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+            </div>
           </div>
         </div>`;
     }
@@ -199,6 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       return `
         <div class="card has-media" data-category="${safeCategory}">
+          ${adminActionsHTML}
           <div class="card-media">
             <span class="media-type-badge">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -221,13 +386,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="card-top"><span class="tag-pill ${pillClass}">${catLabel}</span></div>
             <h3><a href="article.html?id=${item.id}">${title}</a></h3>
             <p class="excerpt">${excerpt}</p>
-            <div class="tag-row"><span>${dateLabel}</span><span>${gallery.length} photos</span></div>
+            <div class="tag-row">
+              <span>${dateLabel}</span><span>${gallery.length} photos</span>
+              <button class="share-btn" data-id="${item.id}" aria-label="Partager" title="Copier le lien"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+            </div>
           </div>
         </div>`;
     }
 
     return `
       <div class="card has-media" data-category="${safeCategory}">
+        ${adminActionsHTML}
         <div class="card-media" data-lightbox="image" data-src="${item.mediaUrl}" data-caption="${caption}">
           <span class="media-type-badge">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
@@ -239,7 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="card-top"><span class="tag-pill ${pillClass}">${catLabel}</span></div>
           <h3><a href="article.html?id=${item.id}">${title}</a></h3>
           <p class="excerpt">${excerpt}</p>
-          <div class="tag-row"><span>${dateLabel}</span><span>1 photo</span></div>
+          <div class="tag-row">
+            <span>${dateLabel}</span><span>1 photo</span>
+            <button class="share-btn" data-id="${item.id}" aria-label="Partager" title="Copier le lien"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg></button>
+          </div>
         </div>
       </div>`;
   }
@@ -446,27 +618,57 @@ document.addEventListener('DOMContentLoaded', () => {
   function prependReportage(item) {
     if (!grid) return;
     grid.insertAdjacentHTML('afterbegin', reportageCardHTML(item));
-    applyFilter(currentFilter); // respecte le filtre actif après ajout
+    applyFilter(); // respecte le filtre actif et la recherche après ajout
     initCardCarousels(); // Initialise le carrousel sur la nouvelle carte
   }
 
   async function loadReportages() {
     if (!grid) return;
+    
+    // 1. Afficher les Skeletons pendant le chargement (sans écraser les cartes statiques)
+    const skeletonsHTML = `
+      <div class="skeleton-card temp-skel"></div>
+      <div class="skeleton-card temp-skel"></div>
+      <div class="skeleton-card temp-skel"></div>
+      <div class="skeleton-card temp-skel"></div>
+    `;
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState) {
+      emptyState.insertAdjacentHTML('afterend', skeletonsHTML);
+    } else {
+      grid.insertAdjacentHTML('afterbegin', skeletonsHTML);
+    }
+
     try {
       const res = await fetch('/api/reportages');
       if (!res.ok) throw new Error('Réponse API invalide');
       const items = await res.json();
-      // Du plus ancien au plus récent pour que insertAdjacentHTML('afterbegin', ...)
-      // place bien le plus récent en premier au final.
+      
+      // Stocker en global pour l'édition
+      window.allReportages = items;
+      
+      // Nettoyer les skeletons avant l'insertion
+      grid.querySelectorAll('.temp-skel').forEach(el => el.remove());
+      
+      // On retire aussi les anciennes cartes dynamiques au cas où on recharge la liste (après un edit/delete)
+      // pour éviter les doublons. On laisse les cartes statiques (qui n'ont pas de bouton delete-btn).
+      grid.querySelectorAll('.card:has(.delete-btn)').forEach(el => el.remove());
+
       [...items].reverse().forEach(item => {
-        grid.insertAdjacentHTML('afterbegin', reportageCardHTML(item));
+        // Insérer juste après le emptyState s'il existe
+        if (emptyState) {
+          emptyState.insertAdjacentHTML('afterend', reportageCardHTML(item));
+        } else {
+          grid.insertAdjacentHTML('afterbegin', reportageCardHTML(item));
+        }
       });
-      applyFilter(currentFilter);
+      
+      refreshAdminUI();
+      applyFilter();
       initCardCarousels(); // Initialise tous les carrousels de cartes
     } catch (err) {
-      // Le serveur n'est peut-être pas lancé (ex. ouverture directe du fichier
-      // HTML sans "npm start") : le reste du site continue de fonctionner.
-      console.warn('Impossible de charger les reportages depuis l\'API :', err.message);
+      grid.querySelectorAll('.temp-skel').forEach(el => el.remove());
+      console.warn("Impossible de charger les reportages depuis l'API :", err.message);
     }
   }
   loadReportages();
@@ -528,6 +730,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200 Mo
   const MAX_IMAGE_SIZE = 15 * 1024 * 1024;  // 15 Mo par image
+  
+  // Fonction de compression asynchrone (API Canvas)
+  function compressImage(file, maxWidth = 1920) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > maxWidth) {
+            height = Math.round(height * maxWidth / width);
+            width = maxWidth;
+          }
+          
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".webp"), {
+                type: 'image/webp',
+                lastModified: Date.now()
+              });
+              resolve(newFile);
+            } else {
+              reject(new Error('Erreur lors de la compression de ' + file.name));
+            }
+          }, 'image/webp', 0.8);
+        };
+        img.onerror = () => reject(new Error("Format d'image invalide."));
+      };
+      reader.onerror = () => reject(new Error('Erreur de lecture du fichier.'));
+    });
+  }
 
   publishForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -553,9 +796,36 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const formData = new FormData(publishForm); // capture aussi les fichiers nommés
-
     publishSubmit.disabled = true;
+    publishSubmit.textContent = 'Préparation et compression...';
+
+    const formData = new FormData(publishForm); // capture aussi les fichiers nommés
+    
+    try {
+      if (mediaType === 'image') {
+        formData.delete('media'); // on supprime les fichiers non compressés
+        for (let i = 0; i < files.length; i++) {
+           if (files[i].type.startsWith('image/')) {
+              const compressedFile = await compressImage(files[i], 1920);
+              formData.append('media', compressedFile);
+           }
+        }
+      }
+      
+      // Si une image poster a été choisie (vidéo), on pourrait aussi la compresser
+      const posterInput = publishForm.querySelector('#pPoster');
+      if (mediaType === 'video' && posterInput && posterInput.files.length > 0) {
+         formData.delete('poster');
+         const compressedPoster = await compressImage(posterInput.files[0], 1920);
+         formData.append('poster', compressedPoster);
+      }
+    } catch(err) {
+      showFeedback('Erreur lors de la compression : ' + err.message, 'error');
+      publishSubmit.disabled = false;
+      publishSubmit.textContent = 'Publier le reportage';
+      return;
+    }
+
     publishSubmit.textContent = 'Publication en cours…';
 
     try {
@@ -590,6 +860,133 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       publishSubmit.disabled = false;
       publishSubmit.textContent = 'Publier le reportage';
+    }
+  });
+
+  /* ===================== PARTAGE, SUPPRESSION & MODIFICATION ===================== */
+  grid?.addEventListener('click', async (e) => {
+    
+    // -- Partage
+    const shareBtn = e.target.closest('.share-btn');
+    if (shareBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = shareBtn.dataset.id;
+      const url = `${window.location.origin}/article.html?id=${id}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        
+        // Petit feedback visuel rapide sur le bouton
+        const originalHTML = shareBtn.innerHTML;
+        shareBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        setTimeout(() => { shareBtn.innerHTML = originalHTML; }, 2000);
+      } catch (err) {
+        console.error('Erreur lors de la copie', err);
+      }
+      return;
+    }
+    const deleteBtn = e.target.closest('.delete-btn');
+    if (deleteBtn) {
+      e.preventDefault();
+      e.stopPropagation(); // Empêche l'ouverture de l'article/lightbox
+      const id = deleteBtn.dataset.id;
+      if (confirm('Êtes-vous sûr de vouloir supprimer cet article définitivement ? (Les médias seront détruits)')) {
+        try {
+          const res = await fetch(`/api/reportages/${id}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            if (res.status === 401) { clearAdminToken(); refreshAdminUI(); }
+            throw new Error(data.error || 'Erreur de suppression');
+          }
+          await loadReportages(); // Recharge la liste
+        } catch (err) {
+          alert('Erreur : ' + err.message);
+        }
+      }
+      return;
+    }
+
+    const editBtn = e.target.closest('.edit-btn');
+    if (editBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = editBtn.dataset.id;
+      openEditModal(id);
+      return;
+    }
+  });
+
+  /* ===================== FORMULAIRE DE MODIFICATION ===================== */
+  const editOverlay = document.getElementById('editOverlay');
+  const editForm = document.getElementById('editForm');
+  const editFeedback = document.getElementById('editFeedback');
+  
+  function closeEditModal() {
+    editOverlay?.classList.remove('open');
+  }
+
+  document.getElementById('editClose')?.addEventListener('click', closeEditModal);
+  document.getElementById('editCancel')?.addEventListener('click', closeEditModal);
+  editOverlay?.addEventListener('click', (e) => { if (e.target === editOverlay) closeEditModal(); });
+
+  function openEditModal(id) {
+    if (!window.allReportages) return;
+    const item = window.allReportages.find(r => r.id === id);
+    if (!item) return alert('Article introuvable.');
+
+    document.getElementById('eId').value = item.id;
+    document.getElementById('eTitle').value = item.title;
+    document.getElementById('eCategory').value = item.category;
+    document.getElementById('eDate').value = item.date.slice(0, 10);
+    document.getElementById('eExcerpt').value = item.excerpt;
+    document.getElementById('eBody').value = item.body || '';
+    document.getElementById('eCaption').value = item.caption || '';
+    
+    if (editFeedback) { editFeedback.textContent = ''; editFeedback.className = 'form-feedback'; }
+    
+    editOverlay?.classList.add('open');
+  }
+
+  editForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = document.getElementById('editSubmit');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enregistrement...';
+    
+    const id = document.getElementById('eId').value;
+    const formData = new FormData(editForm);
+    // Supprimer le champ fichier vide s'il n'y a pas de fichier sélectionné
+    const fileInput = document.getElementById('eMedia');
+    if (fileInput && fileInput.files.length === 0) {
+      formData.delete('media');
+    }
+
+    try {
+      const res = await fetch(`/api/reportages/${id}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: formData
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        if (res.status === 401) { clearAdminToken(); refreshAdminUI(); }
+        throw new Error(data.error || 'Erreur lors de la modification');
+      }
+
+      closeEditModal();
+      await loadReportages();
+    } catch (err) {
+      if (editFeedback) {
+        editFeedback.textContent = err.message;
+        editFeedback.className = 'form-feedback error';
+      }
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enregistrer les modifications';
     }
   });
 
@@ -629,6 +1026,10 @@ document.addEventListener('DOMContentLoaded', () => {
     openPublishBtn?.classList.toggle('hidden', !isAdmin);
     adminLoginBtn?.classList.toggle('hidden', isAdmin);
     adminLogoutBtn?.classList.toggle('hidden', !isAdmin);
+    
+    document.querySelectorAll('.admin-actions').forEach(el => {
+      el.classList.toggle('hidden', !isAdmin);
+    });
   }
   refreshAdminUI();
 
@@ -679,5 +1080,35 @@ document.addEventListener('DOMContentLoaded', () => {
       adminSubmit.textContent = 'Se connecter';
     }
   });
+
+  /* ===================== BOUTON REMONTER ===================== */
+  const scrollTopBtn = document.getElementById('scrollTopBtn');
+  if (scrollTopBtn) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 400) {
+        scrollTopBtn.classList.remove('hidden');
+      } else {
+        scrollTopBtn.classList.add('hidden');
+      }
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // Vérification de la présence du paramètre ?edit dans l'URL pour ouvrir automatiquement la modale
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('edit');
+  if (editId) {
+    // Il faut attendre que les reportages soient chargés
+    setTimeout(() => {
+      if (isAdminLoggedIn()) {
+        openEditModal(editId);
+        // Nettoyer l'URL sans recharger
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }, 1000);
+  }
 
 });

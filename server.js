@@ -15,6 +15,7 @@ import { fileURLToPath } from "url";
 import { randomUUID, createHash, timingSafeEqual } from "crypto";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import nodemailer from "nodemailer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,12 +24,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join(__dirname, "data", "reportages.json");
+const NEWSLETTER_FILE = path.join(__dirname, "data", "newsletter.json");
 const UPLOADS_DIR = path.join(__dirname, "uploads");
 const PUBLIC_DIR = path.join(__dirname, "public");
 
 // --- Préparation des dossiers/fichiers nécessaires ---
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, "[]", "utf-8");
+if (!fs.existsSync(NEWSLETTER_FILE)) fs.writeFileSync(NEWSLETTER_FILE, "[]", "utf-8");
 
 // --- Authentification administrateur ---
 // Volontairement simple : un mot de passe partagé + des jetons en mémoire avec
@@ -68,9 +71,6 @@ function requireAdmin(req, res, next) {
 }
 
 // --- Petite "base de données" fichier JSON ---
-// Simple et suffisant pour démarrer. Pour un vrai déploiement en production,
-// remplacer readReportages/writeReportages par une vraie base (PostgreSQL,
-// MongoDB, SQLite...).
 function readReportages() {
   try {
     return JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
@@ -82,10 +82,79 @@ function writeReportages(list) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(list, null, 2), "utf-8");
 }
 
+// --- "Base de données" Newsletter ---
+function readNewsletter() {
+  try {
+    return JSON.parse(fs.readFileSync(NEWSLETTER_FILE, "utf-8"));
+  } catch {
+    return [];
+  }
+}
+function writeNewsletter(list) {
+  fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify(list, null, 2), "utf-8");
+}
+
+// --- Configuration Email (Nodemailer) ---
+// Utilise un serveur SMTP local de test si aucune variable d'environnement n'est fournie,
+// ou bien le SMTP de votre choix en production.
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "localhost",
+  port: process.env.SMTP_PORT || 2525,
+  auth: process.env.SMTP_USER ? {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  } : undefined,
+});
+
+async function notifySubscribers(article) {
+  const subscribers = readNewsletter();
+  if (subscribers.length === 0) return;
+
+  const bccList = subscribers.join(", ");
+  const articleUrl = `http://localhost:${PORT}/article.html?id=${article.id}`;
+
+  try {
+    await transporter.sendMail({
+      from: '"Security IT" <newsletter@security-it.example>',
+      to: '"Abonnés Security IT" <newsletter@security-it.example>', // fake 'to', use BCC for privacy
+      bcc: bccList,
+      subject: `Nouveau reportage : ${article.title}`,
+      text: `Bonjour,\n\nUn nouvel article vient d'être publié sur Security IT :\n\n"${article.title}"\n${article.excerpt}\n\nLisez-le en intégralité ici : ${articleUrl}\n\nÀ bientôt !`,
+      html: `<h2>Un nouvel article a été publié</h2><p><strong>${article.title}</strong></p><p>${article.excerpt}</p><p><a href="${articleUrl}">Lire l'article en ligne</a></p>`
+    });
+    console.log(`Notification envoyée à ${subscribers.length} abonnés.`);
+  } catch (error) {
+    console.error("Erreur lors de l'envoi des notifications par e-mail :", error);
+  }
+}
+
 // --- Configuration de l'upload (Multer) ---
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
 const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200 Mo par fichier
+const GLOBAL_MAX_UPLOADS_SIZE = 2 * 1024 * 1024 * 1024; // 2 Go global
+
+function getDirSize(dirPath) {
+  let size = 0;
+  try {
+    const files = fs.readdirSync(dirPath);
+    for (const file of files) {
+      const stats = fs.statSync(path.join(dirPath, file));
+      size += stats.size;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return size;
+}
+
+function checkUploadQuota(req, res, next) {
+  const currentSize = getDirSize(UPLOADS_DIR);
+  if (currentSize >= GLOBAL_MAX_UPLOADS_SIZE) {
+    return res.status(403).json({ error: "Quota de stockage global atteint (2 Go). Impossible d'ajouter de nouveaux médias." });
+  }
+  next();
+}
 
 // CRITIQUE : l'extension du fichier stocké est dérivée UNIQUEMENT du type MIME
 // déjà validé par fileFilter, jamais du nom de fichier fourni par le client
@@ -124,6 +193,8 @@ const upload = multer({
 });
 
 // --- En-têtes de sécurité ---
+app.use(express.json());
+
 // CSP personnalisée (pas les valeurs par défaut de Helmet) car le site utilise
 // des attributs style="" en ligne (icônes SVG théméees) et charge Google Fonts.
 app.use(
@@ -247,7 +318,31 @@ app.get("/api/cve-of-the-day", async (req, res) => {
   }
 });
 
-app.use(express.json());
+// --- POST /api/newsletter : inscription à la newsletter ---
+const newsletterLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 10, // 10 inscriptions max par IP par heure
+  message: { error: "Trop de tentatives d'inscription. Réessayez plus tard." },
+});
+
+app.post("/api/newsletter", newsletterLimiter, (req, res) => {
+  const { email } = req.body;
+  
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "Adresse e-mail invalide." });
+  }
+
+  const list = readNewsletter();
+  if (list.includes(email.toLowerCase())) {
+    return res.status(409).json({ error: "Cet e-mail est déjà inscrit." });
+  }
+
+  list.push(email.toLowerCase());
+  writeNewsletter(list);
+  
+  res.status(201).json({ message: "Inscription confirmée avec succès." });
+});
+
 app.use(express.static(PUBLIC_DIR));
 app.use("/uploads", express.static(UPLOADS_DIR));
 
@@ -285,6 +380,119 @@ app.get("/api/reportages/:id", (req, res) => {
   res.json(item);
 });
 
+// --- DELETE /api/reportages/:id : suppression d'un reportage ---
+app.delete("/api/reportages/:id", requireAdmin, async (req, res) => {
+  try {
+    const list = readReportages();
+    const index = list.findIndex((r) => r.id === req.params.id);
+    if (index === -1) {
+      return res.status(404).json({ error: "Article introuvable." });
+    }
+
+    const item = list[index];
+    
+    // Supprimer les fichiers associés du système de fichiers
+    const filesToDelete = [];
+    if (item.mediaUrl) filesToDelete.push(path.join(__dirname, "public", item.mediaUrl));
+    if (item.posterUrl) filesToDelete.push(path.join(__dirname, "public", item.posterUrl));
+    if (item.gallery && item.gallery.length > 0) {
+      item.gallery.forEach(g => {
+        if (g.url) filesToDelete.push(path.join(__dirname, "public", g.url));
+      });
+    }
+
+    for (const filePath of filesToDelete) {
+      try {
+        await fs.promises.unlink(filePath);
+      } catch (err) {
+        console.warn(`[Avertissement] Impossible de supprimer le fichier ${filePath}:`, err.message);
+      }
+    }
+
+    list.splice(index, 1);
+    writeReportages(list);
+
+    res.json({ success: true, message: "Article supprimé avec succès." });
+  } catch (err) {
+    console.error("Erreur DELETE:", err);
+    res.status(500).json({ error: "Erreur serveur lors de la suppression." });
+  }
+});
+
+// --- PUT /api/reportages/:id : modification complète d'un reportage ---
+app.put(
+  "/api/reportages/:id",
+  requireAdmin,
+  checkUploadQuota,
+  upload.fields([{ name: "media", maxCount: 1 }]),
+  async (req, res) => {
+    try {
+      const list = readReportages();
+      const index = list.findIndex((r) => r.id === req.params.id);
+      if (index === -1) {
+        return res.status(404).json({ error: "Article introuvable." });
+      }
+
+      const item = list[index];
+      const { title, excerpt, body, category, date, caption } = req.body;
+      
+      let newMediaUrl = item.mediaUrl;
+      let newGallery = item.gallery;
+
+      // Si un nouveau média est envoyé, on remplace l'ancien
+      if (req.files && req.files["media"] && req.files["media"][0]) {
+        const file = req.files["media"][0];
+        const publicUrl = `/uploads/${file.filename}`;
+        
+        // Supprimer l'ancien média physique
+        if (item.mediaUrl) {
+          const oldPath = path.join(__dirname, "public", item.mediaUrl);
+          try {
+            await fs.promises.unlink(oldPath);
+          } catch (err) {
+            console.warn(`Impossible de supprimer l'ancien fichier ${oldPath}:`, err.message);
+          }
+        }
+        
+        newMediaUrl = publicUrl;
+        
+        // On détermine le type en fonction du nouveau fichier
+        if (file.mimetype.startsWith("video/")) {
+          item.mediaType = "video";
+          newGallery = []; // La galerie n'a pas de sens pour une vidéo simple
+        } else {
+          item.mediaType = "image";
+          // S'il n'y avait qu'une seule image (ou pas de galerie), on remplace juste l'URL
+          if (!newGallery || newGallery.length <= 1) {
+            newGallery = [{ url: publicUrl }];
+          } else {
+            // S'il y avait une galerie de plusieurs images, on remplace la première
+            newGallery[0].url = publicUrl;
+          }
+        }
+      }
+
+      list[index] = {
+        ...item,
+        title: title || item.title,
+        excerpt: excerpt || item.excerpt,
+        body: body || item.body,
+        category: category || item.category,
+        date: date || item.date,
+        caption: caption || item.caption,
+        mediaUrl: newMediaUrl,
+        gallery: newGallery,
+      };
+
+      writeReportages(list);
+      res.json({ success: true, message: "Article mis à jour.", article: list[index] });
+    } catch (err) {
+      console.error("Erreur PUT:", err);
+      res.status(500).json({ error: "Erreur serveur lors de la mise à jour." });
+    }
+  }
+);
+
 // --- POST /api/reportages : publication d'un nouveau reportage (multipart/form-data) ---
 // Réservé à l'administrateur connecté (jeton requis, voir requireAdmin).
 // Champs texte : title, excerpt, body (optionnel), category, date,
@@ -307,6 +515,7 @@ const ALLOWED_CATEGORIES = [
 app.post(
   "/api/reportages",
   requireAdmin,
+  checkUploadQuota,
   upload.fields([
     { name: "media", maxCount: 6 },
     { name: "poster", maxCount: 1 },
@@ -373,6 +582,9 @@ app.post(
       const list = readReportages();
       list.push(reportage);
       writeReportages(list);
+
+      // Envoi de la notification aux abonnés en arrière-plan
+      notifySubscribers(reportage);
 
       res.status(201).json(reportage);
     } catch (err) {
