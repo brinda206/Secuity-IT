@@ -1,0 +1,100 @@
+[
+  {
+    "id": "seed-video-1",
+    "title": "Interview : sur place après l'attaque du réseau logistique régional",
+    "excerpt": "Notre équipe s'est rendue sur site pour recueillir le témoignage d'un responsable informatique confronté à l'arrêt total des systèmes d'expédition.",
+    "category": "reportage-terrain",
+    "date": "2026-07-21",
+    "mediaType": "video",
+    "mediaUrl": "https://interactive-examples.mdx.dev/media/cc0-videos/flower.mp4",
+    "posterUrl": "https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?q=80&w=800&auto=format&fit=crop",
+    "gallery": [],
+    "body": "Notre équipe s'est rendue sur place trois jours après l'incident, alors que les équipes techniques travaillaient encore à rétablir les systèmes d'expédition. Le responsable informatique du site, qui a accepté de témoigner à visage couvert, décrit une nuit de travail ininterrompue pour isoler les serveurs touchés avant que le chiffrement ne se propage à l'ensemble du réseau logistique.\n\nSelon son témoignage, les premiers signes suspects sont passés inaperçus pendant plusieurs jours : quelques lenteurs sur le système de gestion des expéditions, mises sur le compte d'une simple surcharge. Ce n'est qu'au moment où les postes de travail ont commencé à afficher une note de rançon que l'ampleur de la compromission est devenue évidente.\n\nDeux semaines après l'incident, l'activité reprend progressivement, mais une partie des commandes en cours au moment de l'attaque a dû être ressaisie manuellement, faute de sauvegarde suffisamment récente.",
+    "caption": "Interview terrain — témoignage recueilli après l'attaque contre le réseau logistique régional, 21 juillet 2026.",
+    "createdAt": "2026-07-21T09:00:00.000Z"
+  },
+  {
+    "id": "seed-photo-1",
+    "title": "Reportage photo : dans la salle serveurs sinistrée d'un hébergeur régional",
+    "excerpt": "Images prises sur place montrant l'ampleur des dégâts matériels après la coupure d'urgence des systèmes lors de l'incident.",
+    "category": "reportage-terrain",
+    "date": "2026-07-19",
+    "mediaType": "image",
+    "mediaUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop",
+    "posterUrl": null,
+    "gallery": [
+      {
+        "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?q=80&w=1200&auto=format&fit=crop"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop"
+      }
+    ],
+    "body": "Ces clichés ont été pris lors d'une visite encadrée de la salle serveurs d'un hébergeur régional, quarante-huit heures après la coupure d'urgence déclenchée à la suite de la détection du chiffrement. La procédure de mise à l'arrêt, bien que nécessaire pour limiter la propagation, a laissé une partie des équipements dans un état difficile à restaurer rapidement.\n\nSur place, les équipes techniques travaillaient déjà au recensement précis des baies touchées afin de prioriser les services les plus critiques pour la reprise. Certains clients hébergés ont ainsi retrouvé un accès partiel à leurs services en moins de 24 heures, tandis que d'autres ont dû patienter près d'une semaine.\n\nL'hébergeur a depuis annoncé un audit complet de sa politique de sauvegarde et de son cloisonnement réseau interne, sans communiquer de calendrier précis pour sa mise en œuvre.",
+    "caption": "Salle serveurs touchée par le chiffrement — cliché pris lors du reportage du 19 juillet 2026.",
+    "createdAt": "2026-07-19T09:00:00.000Z"
+  },
+  {
+    "id": "intervention-cabinet-comptable",
+    "title": "Intervention : réponse à incident chez un cabinet comptable touché par un rançongiciel",
+    "excerpt": "Retour sur notre intervention d'urgence, de l'isolement des systèmes touchés jusqu'à la reprise d'activité complète en moins de six jours.",
+    "category": "interventions",
+    "date": "2026-07-27",
+    "mediaType": "video",
+    "mediaUrl": "https://interactive-examples.mdx.dev/media/cc0-videos/coffee.mp4",
+    "posterUrl": "https://picsum.photos/seed/intervention-cabinet/1200/675",
+    "gallery": [],
+    "body": "Notre équipe de réponse à incident a été sollicitée un dimanche matin par un cabinet comptable dont l'ensemble des postes affichait une note de rançon. La priorité immédiate a été de couper les accès réseau du site pour empêcher toute propagation vers les postes non encore touchés, avant même de commencer à évaluer l'étendue des dégâts.\n\nL'analyse a permis d'identifier le point d'entrée : un accès de bureau à distance exposé directement sur internet, protégé par un seul mot de passe sans authentification multifacteur. Une fois la cause écartée, la reconstruction a pu commencer à partir des dernières sauvegardes saines, en repartant d'une infrastructure entièrement réinstallée plutôt que de tenter un nettoyage des machines compromises.\n\nSix jours après le début de l'intervention, l'ensemble des postes du cabinet était de nouveau opérationnel, avec cette fois une authentification multifacteur systématique sur tous les accès distants et une politique de sauvegarde hors ligne mise en place pour éviter qu'un futur incident ne touche aussi les copies de sauvegarde.",
+    "caption": "Retour d'intervention — réponse à incident chez un cabinet comptable, juillet 2026.",
+    "createdAt": "2026-07-27T08:30:00.000Z"
+  },
+  {
+    "id": "intervention-pme-industrielle",
+    "title": "Intervention : sécurisation d'une PME industrielle après une tentative d'intrusion sur ses automates",
+    "excerpt": "Une tentative d'accès à distance non autorisée sur le réseau de supervision a été détectée et bloquée avant qu'elle n'atteigne les automates de production.",
+    "category": "interventions",
+    "date": "2026-07-24",
+    "mediaType": "video",
+    "mediaUrl": "https://interactive-examples.mdx.dev/media/cc0-videos/friday.mp4",
+    "posterUrl": "https://picsum.photos/seed/intervention-industrielle/1200/675",
+    "gallery": [],
+    "body": "Une PME du secteur industriel nous a contactés après qu'une alerte de son pare-feu a signalé plusieurs tentatives de connexion inhabituelles vers son réseau de supervision, en dehors des horaires de production habituels. Notre équipe est intervenue sur site le jour même pour analyser l'origine de ces tentatives.\n\nL'investigation a révélé qu'un compte de maintenance utilisé par un prestataire externe avait été compromis via la réutilisation d'un mot de passe déjà exposé dans une fuite de données sans lien direct avec l'entreprise. Aucune tentative n'avait encore abouti au moment de l'intervention, mais le réseau de supervision n'était pas suffisamment cloisonné du reste du système d'information pour garantir qu'un accès réussi serait resté sans conséquence.\n\nEn plus de la révocation immédiate du compte compromis, nous avons accompagné l'entreprise dans la mise en place d'une segmentation stricte entre son réseau bureautique et son réseau industriel, ainsi qu'un accès dédié et surveillé pour les prestataires de maintenance externes.",
+    "caption": "Retour d'intervention — sécurisation d'un réseau industriel, juillet 2026.",
+    "createdAt": "2026-07-24T14:00:00.000Z"
+  },
+  {
+    "id": "intervention-clinique-veterinaire",
+    "title": "Intervention : restauration des systèmes d'une clinique après une panne provoquée par un logiciel malveillant",
+    "excerpt": "Un logiciel malveillant introduit par une pièce jointe a perturbé la prise de rendez-vous et l'accès aux dossiers pendant près de 48 heures.",
+    "category": "interventions",
+    "date": "2026-07-15",
+    "mediaType": "video",
+    "mediaUrl": "https://interactive-examples.mdx.dev/media/cc0-videos/flower.mp4",
+    "posterUrl": "https://picsum.photos/seed/intervention-clinique/1200/675",
+    "gallery": [],
+    "body": "Une clinique de taille moyenne nous a signalé l'impossibilité soudaine d'accéder à son logiciel de prise de rendez-vous et à une partie de ses dossiers, à la suite de l'ouverture d'une pièce jointe reçue par courriel par un membre du personnel administratif. Le logiciel malveillant, une fois exécuté, s'était propagé aux postes partageant le même dossier réseau.\n\nNotre intervention a commencé par la mise en quarantaine des postes visiblement touchés, le temps d'identifier précisément la souche du logiciel malveillant et de vérifier qu'aucune exfiltration de données n'avait eu lieu. Contrairement à un rançongiciel, ce logiciel visait principalement à perturber le fonctionnement des systèmes plutôt qu'à en chiffrer le contenu contre rançon, ce qui a permis une restauration plus rapide que redouté initialement.\n\nAprès 48 heures, l'ensemble des services était rétabli. La clinique a depuis mis en place une formation courte de sensibilisation au hameçonnage pour l'ensemble de son personnel administratif, à la suite de notre recommandation.",
+    "caption": "Retour d'intervention — restauration des systèmes d'une clinique, juillet 2026.",
+    "createdAt": "2026-07-15T11:00:00.000Z"
+  },
+  {
+    "id": "9afd39ff-768e-4318-b5e3-da2f338079bd",
+    "title": "Test extension",
+    "excerpt": "Test de la faille d'extension corrigée.",
+    "body": "",
+    "category": "reportage-terrain",
+    "date": "2026-07-30",
+    "mediaType": "image",
+    "mediaUrl": "/uploads/1785498830661-7ed0819b-7771-4969-bff6-2c3cbaac2753.png",
+    "posterUrl": null,
+    "gallery": [
+      {
+        "url": "/uploads/1785498830661-7ed0819b-7771-4969-bff6-2c3cbaac2753.png"
+      }
+    ],
+    "caption": "",
+    "createdAt": "2026-07-31T11:53:50.663Z"
+  }
+]
