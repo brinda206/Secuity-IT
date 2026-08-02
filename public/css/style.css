@@ -444,6 +444,7 @@ html[data-theme="dark"] .theme-toggle .moon-shape { opacity: 1; transform: scale
   color: inherit;
   text-decoration: none;
   cursor: pointer;
+  overflow: hidden;
 }
 .hero-carousel-slide .grid-art {
   position: absolute;
@@ -2142,7 +2143,12 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
   .logo { margin-left: 0; font-size: 18px; gap: 8px; }
   .logo .logo-mark { width: 36px; height: 36px; }
   .logo small { display: none; }
-  .header-actions { gap: 8px; }
+  .header-actions { gap: 6px; }
+  /* Masquer le bouton recherche sur mobile (la barre est déjà dans la page) */
+  #headerSearchBtn { display: none; }
+  /* Masquer les labels des boutons admin sur mobile */
+  .btn-secondary span { display: none; }
+  .btn-secondary { padding: 8px; min-width: 36px; justify-content: center; }
   .icon-btn { width: 36px; height: 36px; }
 
   .header-actions .btn-primary { display: none; }
@@ -2224,8 +2230,10 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
   .hero-carousel-slide p.excerpt { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14.5px; }
   
   /* Sur la page A propos, le texte ne doit pas être tronqué */
-  .about-hero .hero-carousel-slide { min-height: auto; }
-  .about-hero .hero-carousel-slide p.excerpt { display: block; overflow: visible; font-size: 15px; margin-bottom: 24px; }
+  .about-hero .hero-carousel-slide { min-height: auto; overflow: hidden; }
+  .about-hero .hero-carousel-slide .content { max-width: 100%; box-sizing: border-box; }
+  .about-hero .hero-carousel-slide p.excerpt { display: block; overflow: visible; font-size: 14px; margin-bottom: 16px; word-break: break-word; }
+  .about-hero .hero-carousel-slide h2 { font-size: 22px; word-break: break-word; }
   .hero-carousel-dots { left: 50%; right: auto; transform: translateX(-50%); bottom: 16px; }
   .hero-carousel-btn { width: 36px; height: 36px; }
   .hero-carousel-btn.prev { left: 8px; }
