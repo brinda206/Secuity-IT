@@ -1483,57 +1483,89 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
 .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; font-size: 13.5px; color: var(--ink-faint); font-weight: 500; }
 .article-meta .mono { font-size: 12.5px; }
 
-/* ---------- SHARE DROPDOWN ---------- */
+/* ---------- SHARE DROPDOWN (Cyber Tech Aesthetic) ---------- */
 .share-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 200px;
-  background: var(--surface-solid);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  width: 210px;
+  background: rgba(10, 15, 25, 0.85);
+  border: 1px solid rgba(2, 132, 199, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(2, 132, 199, 0.2);
   padding: 8px 0;
   z-index: 50;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-8px);
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transform: translateY(-10px) scale(0.98);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .share-dropdown.open {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 .share-option {
   width: 100%;
   text-align: left;
-  padding: 10px 16px;
+  padding: 10px 18px;
   background: transparent;
   border: none;
-  color: var(--ink-soft);
-  font-size: 14px;
-  font-weight: 500;
+  color: #94A3B8;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.share-option svg {
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 .share-option:hover {
-  background: var(--surface-alt);
-  color: var(--info);
+  background: rgba(2, 132, 199, 0.15);
+  color: #38BDF8;
+  padding-left: 24px;
 }
-.share-option[data-network="whatsapp"]:hover { color: #25D366; }
-.share-option[data-network="facebook"]:hover { color: #1877F2; }
-.share-option[data-network="instagram"]:hover { color: #E1306C; }
-.share-option[data-network="tiktok"]:hover { color: var(--ink); }
+.share-option:hover svg {
+  opacity: 1;
+}
+.share-option::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
+  transition: background 0.2s;
+}
+.share-option:hover::before { background: #38BDF8; }
+
+.share-option[data-network="whatsapp"]:hover { color: #25D366; background: rgba(37, 211, 102, 0.1); }
+.share-option[data-network="whatsapp"]:hover::before { background: #25D366; }
+
+.share-option[data-network="facebook"]:hover { color: #1877F2; background: rgba(24, 119, 242, 0.1); }
+.share-option[data-network="facebook"]:hover::before { background: #1877F2; }
+
+.share-option[data-network="instagram"]:hover { color: #E1306C; background: rgba(225, 48, 108, 0.1); }
+.share-option[data-network="instagram"]:hover::before { background: #E1306C; }
+
+.share-option[data-network="tiktok"]:hover { color: #FFF; background: rgba(255, 255, 255, 0.1); }
+.share-option[data-network="tiktok"]:hover::before { background: #FFF; }
+
 .share-divider {
   border: none;
-  border-top: 1px solid var(--line-soft);
-  margin: 6px 0;
+  border-top: 1px dashed rgba(2, 132, 199, 0.3);
+  margin: 6px 12px;
 }
 
 .article-banner {
