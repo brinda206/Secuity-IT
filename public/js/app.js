@@ -778,7 +778,16 @@ document.addEventListener('DOMContentLoaded', () => {
       let isValid = true;
       for (const input of inputs) {
         if (!input.checkValidity()) {
-          input.reportValidity();
+          input.focus(); // Mets le focus sur le champ en erreur
+          const label = document.querySelector(`label[for="${input.id}"]`);
+          const fieldName = label ? label.textContent.replace(' (optionnel)', '') : 'Ce champ';
+          
+          if (input.validity.valueMissing) {
+            showToast(`Veuillez remplir le champ obligatoire : ${fieldName}`, true);
+          } else {
+            showToast(`${fieldName} : ${input.validationMessage}`, true);
+          }
+          
           isValid = false;
           break;
         }

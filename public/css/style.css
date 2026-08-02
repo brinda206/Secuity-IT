@@ -1218,8 +1218,8 @@ html[data-theme="light"] .skeleton-card::before {
 }
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
 .modal {
-  background: rgba(15, 23, 42, 0.85); /* Glassmorphism background */
-  border: 1px solid rgba(2, 132, 199, 0.3);
+  background: var(--surface-solid);
+  border: 1px solid var(--info);
   border-radius: 12px;
   width: 90%;
   max-width: 680px;
@@ -1237,14 +1237,14 @@ html[data-theme="light"] .skeleton-card::before {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--surface);
   z-index: 10;
   backdrop-filter: blur(10px);
 }
-.modal-header h3 { font-size: 20px; font-weight: 700; margin: 0; color: #fff; }
+.modal-header h3 { font-size: 20px; font-weight: 700; margin: 0; color: var(--ink); }
 
 /* ---------- FORM STEPPER ---------- */
 .form-stepper {
@@ -1252,7 +1252,7 @@ html[data-theme="light"] .skeleton-card::before {
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--line);
   position: relative;
 }
 .form-stepper::before {
@@ -1393,7 +1393,7 @@ html[data-theme="light"] .skeleton-card::before {
 .publish-form { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
 .form-row { display: flex; flex-direction: column; gap: 8px; }
 .form-row.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-row label, .field-label { font-size: 13.5px; font-weight: 600; color: #CBD5E1; }
+.form-row label, .field-label { font-size: 13.5px; font-weight: 600; color: var(--ink-soft); }
 .form-row input[type="text"],
 .form-row input[type="date"],
 .form-row input[type="email"],
@@ -1401,10 +1401,10 @@ html[data-theme="light"] .skeleton-card::before {
 .form-row select {
   padding: 11px 14px;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--line);
   font-size: 14px;
-  background: rgba(0,0,0,0.2);
-  color: #F8FAFC;
+  background: var(--surface-alt);
+  color: var(--ink);
   transition: all 0.2s ease;
 }
 .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
