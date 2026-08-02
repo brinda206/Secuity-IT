@@ -1015,29 +1015,50 @@ document.addEventListener('DOMContentLoaded', () => {
       globalShareDropdown.dataset.title = title;
       
       globalShareDropdown.classList.toggle('open');
-      return;
     }
+  });
+
+  // Logique de la modale de suppression
+  const deleteOverlay = document.getElementById('deleteOverlay');
+  const deleteIdInput = document.getElementById('deleteId');
+  
+  function closeDeleteModal() {
+    deleteOverlay?.classList.remove('open');
+  }
+  
+  document.getElementById('deleteClose')?.addEventListener('click', closeDeleteModal);
+  document.getElementById('deleteCancel')?.addEventListener('click', closeDeleteModal);
+  deleteOverlay?.addEventListener('click', (e) => { if (e.target === deleteOverlay) closeDeleteModal(); });
+  
+  document.getElementById('deleteConfirmBtn')?.addEventListener('click', async () => {
+    const id = deleteIdInput.value;
+    if (!id) return;
+    
+    try {
+      const res = await fetch(`/api/reportages/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 401) { clearAdminToken(); refreshAdminUI(); }
+        throw new Error(data.error || 'Erreur de suppression');
+      }
+      closeDeleteModal();
+      await loadReportages(); // Recharge la liste
+    } catch (err) {
+      alert('Erreur : ' + err.message);
+    }
+  });
+  document.getElementById('reportagesGrid')?.addEventListener('click', async (e) => {
+    // SUPPRESSION
     const deleteBtn = e.target.closest('.delete-btn');
     if (deleteBtn) {
       e.preventDefault();
       e.stopPropagation(); // Empêche l'ouverture de l'article/lightbox
       const id = deleteBtn.dataset.id;
-      if (confirm('Êtes-vous sûr de vouloir supprimer cet article définitivement ? (Les médias seront détruits)')) {
-        try {
-          const res = await fetch(`/api/reportages/${id}`, {
-            method: 'DELETE',
-            headers: authHeaders()
-          });
-          const data = await res.json();
-          if (!res.ok) {
-            if (res.status === 401) { clearAdminToken(); refreshAdminUI(); }
-            throw new Error(data.error || 'Erreur de suppression');
-          }
-          await loadReportages(); // Recharge la liste
-        } catch (err) {
-          alert('Erreur : ' + err.message);
-        }
-      }
+      deleteIdInput.value = id;
+      deleteOverlay.classList.add('open');
       return;
     }
 

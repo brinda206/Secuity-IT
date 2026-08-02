@@ -574,9 +574,31 @@
         </div>
       </form>
     </div>
-  </div>
+</div>
 
-  <script src="js/theme.js"></script>
+<!-- Modal de confirmation de suppression -->
+<div class="modal-overlay" id="deleteOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Supprimer l'article</h3>
+      <button class="icon-btn" id="deleteClose" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom: 12px; font-size: 15px; color: var(--ink);">Êtes-vous sûr de vouloir supprimer cet article définitivement ?</p>
+      <p style="font-size: 13.5px; color: var(--critical); font-weight: 500; display: flex; align-items: center; gap: 6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Cette action est irréversible et détruira les médias associés.
+      </p>
+      <input type="hidden" id="deleteId">
+    </div>
+    <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px;">
+      <button type="button" class="btn-secondary" id="deleteCancel">Annuler</button>
+      <button type="button" class="btn-primary" style="background: var(--critical); border-color: var(--critical);" id="deleteConfirmBtn">Supprimer définitivement</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
   <script src="js/lightbox.js"></script>
   <script src="js/articles-data.js"></script>
   <script src="js/app.js?v=2" defer></script>

@@ -472,14 +472,16 @@ app.put(
         }
       }
 
+      // On met à jour les champs textuels si fournis dans la requête
+      if (title !== undefined) item.title = title;
+      if (excerpt !== undefined) item.excerpt = excerpt;
+      if (body !== undefined) item.body = body;
+      if (category !== undefined) item.category = category;
+      if (date !== undefined) item.date = date;
+      if (caption !== undefined) item.caption = caption;
+
       list[index] = {
         ...item,
-        title: title || item.title,
-        excerpt: excerpt || item.excerpt,
-        body: body || item.body,
-        category: category || item.category,
-        date: date || item.date,
-        caption: caption || item.caption,
         mediaUrl: newMediaUrl,
         gallery: newGallery,
       };

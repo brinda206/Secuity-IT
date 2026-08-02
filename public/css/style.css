@@ -2005,6 +2005,7 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
   .wrap { padding: 0 16px; }
   .logo { margin-left: 0; font-size: 18px; gap: 8px; }
   .logo .logo-mark { width: 36px; height: 36px; }
+  .logo small { display: none; }
   .header-actions { gap: 8px; }
   .icon-btn { width: 36px; height: 36px; }
 
@@ -2072,6 +2073,10 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
   .hero-carousel-slide { padding: 24px; }
   .hero-carousel-slide h2 { font-size: 24px; }
   .hero-carousel-slide p.excerpt { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 14.5px; }
+  
+  /* Sur la page A propos, le texte ne doit pas être tronqué */
+  .about-hero .hero-carousel-slide { min-height: auto; }
+  .about-hero .hero-carousel-slide p.excerpt { display: block; overflow: visible; font-size: 15px; margin-bottom: 24px; }
   .hero-carousel-dots { left: 50%; right: auto; transform: translateX(-50%); bottom: 16px; }
   .hero-carousel-btn { width: 36px; height: 36px; }
   .hero-carousel-btn.prev { left: 8px; }
