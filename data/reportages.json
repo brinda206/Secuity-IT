@@ -149,7 +149,7 @@
     "mediaUrl": "assets/cyber_shield.png",
     "posterUrl": null,
     "gallery": [],
-    "body": "",
+    "body": "Un nouveau texte réglementaire impose aux opérateurs d'infrastructures critiques — énergie, eau, transports, télécommunications — de notifier tout incident de sécurité avéré aux autorités compétentes dans un délai de vingt-quatre heures suivant sa détection, contre plusieurs jours auparavant.\n\nL'objectif affiché est de permettre une réponse coordonnée plus rapide en cas d'attaque touchant simultanément plusieurs opérateurs d'un même secteur, un scénario que les autorités jugent de plus en plus plausible au vu des tendances observées ces derniers mois.\n\nLes opérateurs concernés devront également transmettre, dans un second temps, un rapport détaillé sur la cause de l'incident et les mesures correctives engagées. Des sanctions financières sont prévues en cas de manquement répété à cette obligation de notification.",
     "caption": "",
     "createdAt": "2026-08-01T15:56:54.530Z"
   },
@@ -163,7 +163,7 @@
     "mediaUrl": "assets/cyber_code.png",
     "posterUrl": null,
     "gallery": [],
-    "body": "",
+    "body": "Un fabricant de caméras de surveillance domestiques a confirmé qu'une partie de ses modèles les plus anciens conservait des identifiants d'administration codés en dur dans le micrologiciel, rendant leur modification impossible par l'utilisateur final.\n\nDes chercheurs en sécurité ont démontré qu'il était possible de retrouver ces identifiants en quelques minutes à partir d'une simple analyse du firmware disponible publiquement sur le site du fabricant, puis d'accéder au flux vidéo de n'importe quel appareil exposé directement sur internet.\n\nLe fabricant a annoncé travailler sur une mise à jour corrective, mais reconnaît que certains modèles plus anciens ne pourront pas être corrigés pour des raisons matérielles. Les utilisateurs de ces modèles sont invités à ne jamais exposer directement leur caméra sur internet et à passer systématiquement par une passerelle sécurisée.",
     "caption": "",
     "createdAt": "2026-08-01T15:56:54.530Z"
   },
@@ -177,7 +177,7 @@
     "mediaUrl": "assets/cyber_shield.png",
     "posterUrl": null,
     "gallery": [],
-    "body": "",
+    "body": "Face à la multiplication des services en ligne, la réutilisation de mots de passe reste l'une des causes les plus fréquentes de compromission de compte. Un gestionnaire de mots de passe permet de générer et de retenir un mot de passe unique et complexe pour chaque service, sans effort de mémorisation.\n\nLes solutions grand public actuelles proposent toutes un remplissage automatique dans le navigateur, une synchronisation entre appareils, et une vérification qui alerte l'utilisateur si l'un de ses mots de passe apparaît dans une fuite de données connue.\n\nPour une équipe entière, la migration se fait généralement mieux par vagues : commencer par les comptes les plus sensibles (messagerie professionnelle, outils d'administration), accompagner les premiers utilisateurs volontaires, puis élargir progressivement plutôt que d'imposer un changement global du jour au lendemain.",
     "caption": "",
     "createdAt": "2026-08-01T15:56:54.530Z"
   }

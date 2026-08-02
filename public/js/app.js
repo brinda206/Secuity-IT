@@ -997,10 +997,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = `${window.location.origin}/article.html?id=${id}`;
       const title = shareBtn.closest('.card')?.querySelector('h3')?.textContent || 'Security IT';
 
-      // Position the dropdown below the button
+      // Position the dropdown below the button relative to the page (not the viewport)
       const rect = shareBtn.getBoundingClientRect();
-      globalShareDropdown.style.position = 'fixed';
-      globalShareDropdown.style.top = `${rect.bottom + 8}px`;
+      globalShareDropdown.style.position = 'absolute';
+      globalShareDropdown.style.top = `${window.scrollY + rect.bottom + 8}px`;
       
       // Prevent going offscreen
       if (rect.right - 200 < 10) {
@@ -1017,6 +1017,13 @@ document.addEventListener('DOMContentLoaded', () => {
       globalShareDropdown.classList.toggle('open');
     }
   });
+
+  // Fermer le menu de partage global lors du défilement (scroll)
+  window.addEventListener('scroll', () => {
+    if (globalShareDropdown.classList.contains('open')) {
+      globalShareDropdown.classList.remove('open');
+    }
+  }, { passive: true });
 
   // Logique de la modale de suppression
   const deleteOverlay = document.getElementById('deleteOverlay');
