@@ -1023,7 +1023,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (globalShareDropdown.classList.contains('open')) {
       globalShareDropdown.classList.remove('open');
     }
-  }, { passive: true });
+  }, { passive: true, capture: true });
 
   // Logique de la modale de suppression
   const deleteOverlay = document.getElementById('deleteOverlay');

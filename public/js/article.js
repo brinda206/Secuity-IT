@@ -79,6 +79,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           shareDropdown.classList.remove('open');
         }
       });
+      
+      window.addEventListener('scroll', () => {
+        if (shareDropdown.classList.contains('open')) {
+          shareDropdown.classList.remove('open');
+        }
+      }, { passive: true, capture: true });
 
       document.querySelectorAll('.share-option').forEach(btn => {
         // Clone for safe replacement
