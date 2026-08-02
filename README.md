@@ -55,7 +55,7 @@ npm install
 npm start
 ```
 
-Ouvrez ensuite **http://localhost:3000** dans votre navigateur.
+Puis ouvrir **http://localhost:3000**.
 
 ---
 
@@ -70,26 +70,44 @@ La publication de contenu est strictement réservée à l'administrateur. Un bou
 ADMIN_PASSWORD="votre-mot-de-passe-fort" npm start
 ```
 
-### Mécanismes de Sécurité Intégrés :
-- **Authentification par Token** : Validation côté serveur (`requireAdmin`) pour bloquer toute requête API non autorisée.
-- **Protection Anti-Bruteforce** : Limite le nombre de tentatives de connexion via `express-rate-limit`.
-- **Validation des Fichiers (MIME type)** : Empêche l'upload de scripts malveillants déguisés en images/vidéos.
-- **Sécurisation des En-têtes** : Utilisation de `helmet` pour la politique de sécurité des contenus (CSP).
+**Comment ça marche techniquement :**
+1. `POST /api/login` avec le mot de passe → si correct, le serveur génère un jeton aléatoire et le renvoie.
+2. Le navigateur garde ce jeton en mémoire locale et l'envoie dans l'en-tête `Authorization: Bearer <jeton>` à chaque appel à `POST /api/reportages`.
+3. Le serveur vérifie ce jeton (middleware `requireAdmin` dans `server.js`) et **refuse la publication avec une erreur 401 si le jeton est absent ou invalide**.
+4. Un bouton "Déconnexion" invalide le jeton côté serveur.
+
+### Audit & Correctifs Appliqués :
+- Extension de fichier dérivée du type MIME validé (empêche l'upload de fichiers exécutables).
+- Protection anti-bruteforce sur `/api/login` (`express-rate-limit`).
+- Jetons administrateur avec expiration (12h).
+- En-têtes de sécurité (`helmet`) avec une Content-Security-Policy adaptée.
 
 ---
 
 ## 📡 Intégration NVD (CVE du jour)
 
 Le site interroge automatiquement l'API publique de la **National Vulnerability Database (NVD)** américaine pour afficher, en temps réel, une vulnérabilité critique récente.
-- **Mise en cache intelligente** : Les requêtes sont mises en cache côté serveur pendant 6 heures (`CVE_CACHE_TTL`) pour optimiser les temps de chargement et respecter les quotas de l'API.
+- **Mise en cache intelligente** : Le résultat est mis en cache côté serveur pendant **6 heures** (`CVE_CACHE_TTL`) pour optimiser les temps de chargement et respecter les quotas de l'API.
 - **Résilience** : En cas de coupure réseau, le dernier résultat connu est affiché avec un indicateur dédié.
+
+*Si tu préfères filtrer sur un mot-clé précis (ex. seulement les CVE touchant Node.js) plutôt que "la plus grave de la semaine", c'est un ajustement simple dans `server.js`.*
 
 ---
 
-## 📝 Contenu Éditorial & Médias
+## 📝 Personnalisation & Contenu Éditorial
 
 Deux types de contenus cohabitent :
 1. **Les articles statiques ("À la une")** : Leurs données sont gérées dans `public/js/articles-data.js` pour des performances maximales.
-2. **Les reportages terrain (Dynamiques)** : Alimentés par le Dashboard Admin, ils sont stockés dans `data/reportages.json` et acceptent des médias lourds (vidéos jusqu'à 200 Mo compressées à la volée, images converties en WebP).
+2. **Les reportages terrain (Dynamiques)** : Alimentés par le Dashboard Admin via l'assistant de publication (Wizard), ils sont stockés dans `data/reportages.json` et acceptent des médias lourds (vidéos jusqu'à 200 Mo, images converties en WebP).
 
-*Note : Les vidéos de démonstration incluses sont sous licence CC0 (domaine public).*
+### Personnalisation rapide :
+- **Logo** : Remplacer `public/assets/logo-icon.png` (utilisé dans le site) et `public/assets/logo-full.jpg`.
+- **Couleurs / thème** : Variables CSS en haut de `public/css/style.css`.
+- **Catégories** : À synchroniser dans les boutons `.chip` (`index.html`), le menu déroulant du formulaire, et l'objet `CATEGORY_LABELS` (`app.js`).
+
+## ⚠️ Limites à connaître pour la production
+
+- **Stockage** : Les métadonnées sont dans un fichier JSON. À remplacer par une vraie base de données (PostgreSQL, MongoDB) si le volume augmente.
+- **Hébergement des fichiers** : Stockage local dans `uploads/`. Envisager un stockage objet (AWS S3, Cloudflare R2) car les plateformes comme Vercel ne conservent pas les fichiers statiques générés.
+- **Taille des fichiers** : Limité à 200 Mo par vidéo et 15 Mo par image.
+- **Authentification** : Le mot de passe transitant en clair, le déploiement sous **HTTPS est indispensable**.
