@@ -999,8 +999,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Position the dropdown below the button relative to the page (not the viewport)
       const rect = shareBtn.getBoundingClientRect();
-      globalShareDropdown.style.position = 'absolute';
-      globalShareDropdown.style.top = `${window.scrollY + rect.bottom + 8}px`;
+      globalShareDropdown.style.position = 'fixed';
+      globalShareDropdown.style.top = `${rect.bottom + 8}px`;
       
       // Prevent going offscreen
       if (rect.right - 200 < 10) {

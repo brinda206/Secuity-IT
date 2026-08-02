@@ -1,131 +1,150 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title id="pageTitle">Article — Security IT</title>
-<meta name="description" content="Lisez notre article détaillé sur les dernières menaces, cyberattaques et méthodes de protection en cybersécurité.">
-<meta name="keywords" content="article cybersécurité, actualités sécurité informatique, menaces, reportage, analyse">
-<meta name="author" content="Security IT">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=7">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Article — Security IT</title>
+  <meta name="description"
+    content="Lisez notre article détaillé sur les dernières menaces, cyberattaques et méthodes de protection en cybersécurité.">
+  <meta name="keywords" content="article cybersécurité, actualités sécurité informatique, menaces, reportage, analyse">
+  <meta name="author" content="Security IT">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=7">
 </head>
+
 <body>
 
-<header class="site">
-  <div class="wrap nav-row">
-    <a href="index.html" class="logo">
-      <span class="logo-mark"><img src="assets/logo-icon.png" alt="Logo Security IT"></span>
-      <span>Security IT<small>VEILLE &amp; RENSEIGNEMENT SÉCURITÉ</small></span>
-    </a>
-    <nav class="main-nav">
-      <a href="index.html">Actualités</a>
-      <a href="index.html?filter=interventions#top">Interventions</a>
-      <a href="index.html?filter=cybercriminalite#top">Cybercriminalité</a>
-      <a href="index.html?filter=vulnerabilites#top">Vulnérabilités</a>
-      <a href="a-propos.html">À propos</a>
-    </nav>
-    <div class="header-actions">
-      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Basculer le mode sombre" aria-pressed="false">
-        <svg viewBox="0 0 24 24" width="19" height="19">
-          <g class="ray-group">
-            <circle class="sun-core" cx="12" cy="12" r="5"/>
-            <g class="rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/>
-              <line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/>
-              <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/>
-              <line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/>
+  <header class="site">
+    <div class="wrap nav-row">
+      <a href="index.html" class="logo">
+        <span class="logo-mark"><img src="assets/logo-icon.png" alt="Logo Security IT"></span>
+        <span>Security IT<small>VEILLE &amp; RENSEIGNEMENT SÉCURITÉ</small></span>
+      </a>
+      <nav class="main-nav">
+        <a href="index.html">Actualités</a>
+        <a href="index.html?filter=interventions#top">Interventions</a>
+        <a href="index.html?filter=cybercriminalite#top">Cybercriminalité</a>
+        <a href="index.html?filter=vulnerabilites#top">Vulnérabilités</a>
+        <a href="a-propos.html">À propos</a>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Basculer le mode sombre"
+          aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="19" height="19">
+            <g class="ray-group">
+              <circle class="sun-core" cx="12" cy="12" r="5" />
+              <g class="rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.2" y1="4.2" x2="5.6" y2="5.6" />
+                <line x1="18.4" y1="18.4" x2="19.8" y2="19.8" />
+                <line x1="4.2" y1="19.8" x2="5.6" y2="18.4" />
+                <line x1="18.4" y1="5.6" x2="19.8" y2="4.2" />
+              </g>
             </g>
-          </g>
-          <path class="moon-shape" d="M20 12.5A8 8 0 1111.5 4a6.5 6.5 0 008.5 8.5z"/>
+            <path class="moon-shape" d="M20 12.5A8 8 0 1111.5 4a6.5 6.5 0 008.5 8.5z" />
+          </svg>
+        </button>
+        <a href="index.html" class="btn-primary">Retour aux actualités</a>
+        <button class="icon-btn menu-toggle" aria-label="Menu">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <main class="article-wrap" id="articleRoot">
+    <a href="index.html" class="back-link">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+      </svg>
+      Retour à toutes les actualités
+    </a>
+
+    <div id="articleContent">
+      <!-- Contenu injecté par js/article.js -->
+      <p class="mono" style="color:var(--ink-faint);">Chargement de l'article…</p>
+    </div>
+  </main>
+
+  <!-- Visionneuse plein écran, réutilisée pour les galeries photo des reportages -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner" id="lightboxInner">
+      <button class="lightbox-close" id="lightboxClose" aria-label="Fermer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
-      <a href="index.html" class="btn-primary">Retour aux actualités</a>
-      <button class="icon-btn menu-toggle" aria-label="Menu">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
+      <div id="lightboxMedia"></div>
+      <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
   </div>
-</header>
-<div class="menu-overlay" id="menuOverlay"></div>
 
-<main class="article-wrap" id="articleRoot">
-  <a href="index.html" class="back-link">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    Retour à toutes les actualités
-  </a>
-
-  <div id="articleContent">
-    <!-- Contenu injecté par js/article.js -->
-    <p class="mono" style="color:var(--ink-faint);">Chargement de l'article…</p>
-  </div>
-</main>
-
-<!-- Visionneuse plein écran, réutilisée pour les galeries photo des reportages -->
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-inner" id="lightboxInner">
-    <button class="lightbox-close" id="lightboxClose" aria-label="Fermer">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div id="lightboxMedia"></div>
-    <div class="lightbox-caption" id="lightboxCaption"></div>
-  </div>
-</div>
-
-<footer>
-  <div class="wrap">
-    <div class="footer-grid">
-      <div>
-        <div class="foot-logo">
-          <span class="logo-mark"><img src="assets/logo-icon.png" alt="Logo Security IT"></span>
-          Security IT
+  <footer>
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <div class="foot-logo">
+            <span class="logo-mark"><img src="assets/logo-icon.png" alt="Logo Security IT"></span>
+            Security IT
+          </div>
+          <p class="tagline">Veille indépendante sur la cybercriminalité et la cybersécurité, pensée pour les équipes
+            techniques comme pour le grand public.</p>
         </div>
-        <p class="tagline">Veille indépendante sur la cybercriminalité et la cybersécurité, pensée pour les équipes techniques comme pour le grand public.</p>
+        <div>
+          <h5>Rubriques</h5>
+          <ul>
+            <li><a href="index.html">Cybercriminalité</a></li>
+            <li><a href="index.html">Vulnérabilités</a></li>
+            <li><a href="index.html">Défense &amp; bonnes pratiques</a></li>
+            <li><a href="index.html">Réglementation</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Ressources</h5>
+          <ul>
+            <li><a href="index.html">Base CVE</a></li>
+            <li><a href="index.html">Glossaire</a></li>
+            <li><a href="index.html">Signaler un incident</a></li>
+            <li><a href="a-propos.html">À propos</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Suivre</h5>
+          <ul>
+            <li><a href="#">RSS</a></li>
+            <li><a href="#">Mastodon</a></li>
+            <li><a href="#">LinkedIn</a></li>
+          </ul>
+        </div>
       </div>
-      <div>
-        <h5>Rubriques</h5>
-        <ul>
-          <li><a href="index.html">Cybercriminalité</a></li>
-          <li><a href="index.html">Vulnérabilités</a></li>
-          <li><a href="index.html">Défense &amp; bonnes pratiques</a></li>
-          <li><a href="index.html">Réglementation</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Ressources</h5>
-        <ul>
-          <li><a href="index.html">Base CVE</a></li>
-          <li><a href="index.html">Glossaire</a></li>
-          <li><a href="index.html">Signaler un incident</a></li>
-          <li><a href="a-propos.html">À propos</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Suivre</h5>
-        <ul>
-          <li><a href="#">RSS</a></li>
-          <li><a href="#">Mastodon</a></li>
-          <li><a href="#">LinkedIn</a></li>
-        </ul>
+      <div class="footer-bottom">
+        <span>© 2026 Security IT. Contenus fournis à titre informatif uniquement.</span>
+        <span class="credit">Conçu avec précision par <a href="https://LaboGraphie.vercel.app" target="_blank"
+            rel="noopener noreferrer">LaboGraphie</a></span>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>© 2026 Security IT. Contenus fournis à titre informatif uniquement.</span>
-      <span class="mono">v1.2</span>
-    </div>
-  </div>
-</footer>
+  </footer>
 
-<script src="js/theme.js"></script>
-<script src="js/lightbox.js"></script>
-<script src="js/mobile-menu.js"></script>
-<script src="js/articles-data.js"></script>
-<script src="js/article.js?v=2" defer></script>
+  <script src="js/theme.js"></script>
+  <script src="js/lightbox.js"></script>
+  <script src="js/mobile-menu.js"></script>
+  <script src="js/articles-data.js"></script>
+  <script src="js/article.js?v=2" defer></script>
 </body>
+
 </html>
