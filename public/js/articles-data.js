@@ -31,6 +31,7 @@ const STATIC_ARTICLES = {
     severity: "warning",
     severityLabel: "Sévérité élevée",
     date: "2026-07-25",
+    mediaUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     readTime: "5 min",
     image: "assets/cyber_code.png",
     excerpt: "La faille permettait à un attaquant non authentifié de contourner les contrôles d'accès sur les applications construites avec ce framework.",
@@ -60,6 +61,7 @@ const STATIC_ARTICLES = {
 
   "phishing-ia-techniques": {
     title: "Comment reconnaître les nouvelles techniques de phishing assistées par IA",
+    mediaUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     category: "defense",
     categoryLabel: "Défense",
     severity: "info",
