@@ -116,7 +116,14 @@ Deux types de contenus cohabitent :
 
 ## 👥 Crédits & Contributeurs
 
-Ce projet n'aurait pas pu voir le jour sans le talent et l'expertise de ses concepteurs :
+La réussite de ce projet repose sur une forte synergie entre design, réflexion ergonomique et développement technique. Le projet a été entièrement porté par l'équipe **[LaboGraphie](https://labographie.vercel.app)** :
 
-- **Design & UX/UI** : L'approche visuelle "Cyber-Tech", l'ergonomie, les micro-interactions et le design global ont été pensés et conçus avec l'apport inestimable de l'équipe **[LaboGraphie](https://labographie.vercel.app)**. Leur expertise a permis de transformer un simple portail en une expérience utilisateur premium.
-- **Développement** : Réalisé avec le concours de **NDE Jordan** et **brinda 206**, contributeurs clés du projet sur GitHub.
+- **[brinda 206](https://github.com/brinda206)** (GitHub) :
+  - **Rôles** : Développement Principal, Idéation, Architecture et Conception.
+  - **Apport** : Brinda est l'architecte principal du projet, ayant réalisé la majeure partie du développement de base, la structuration initiale, ainsi que la définition des parcours utilisateurs (UX Design).
+
+- **[NDE Jordan](https://github.com/NDE-Jordan)** (GitHub) :
+  - **Rôles** : Améliorations UI/UX, UX Writing et Refonte Technique.
+  - **Apport** : Jordan est intervenu pour sublimer le portail via l'intégration de la charte "Cyber-Tech" (Glassmorphism), l'optimisation des micro-interactions, l'UX Writing (Toasts bienveillants), et l'amélioration de composants avancés (Wizard de publication, Drag & Drop).
+
+*Une réalisation signée LaboGraphie, alliant une vision globale pointue à des finitions techniques et esthétiques de haute volée.*
