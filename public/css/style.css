@@ -1413,6 +1413,10 @@ html[data-theme="light"] .skeleton-card::before {
   background: var(--surface-solid);
   box-shadow: 0 0 0 3px var(--info-glow);
 }
+.form-row select option {
+  background: var(--surface-solid);
+  color: var(--ink);
+}
 .form-row textarea { resize: vertical; min-height: 80px; }
 .form-row input[type="file"] {
   font-size: 13.5px;

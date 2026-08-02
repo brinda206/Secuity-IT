@@ -652,9 +652,9 @@ app.post(
   ]),
   (req, res) => {
     try {
-      const { title, excerpt, body, category, date, mediaType, caption } = req.body;
+      const { title, excerpt, body, category, date, mediaType, caption, author, tags } = req.body;
 
-      if (!title || !excerpt || !category || !date || !mediaType) {
+      if (!title || !excerpt || !category || !date || !mediaType || !author) {
         return res.status(400).json({ error: "Merci de compléter tous les champs obligatoires." });
       }
       if (!ALLOWED_CATEGORIES.includes(category)) {
@@ -701,6 +701,8 @@ app.post(
         body: (body || "").trim(),
         category,
         date,
+        author: author.trim(),
+        tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [],
         mediaType,
         mediaUrl,
         posterUrl,
