@@ -119,4 +119,4 @@ Deux types de contenus cohabitent :
 Ce projet n'aurait pas pu voir le jour sans le talent et l'expertise de ses concepteurs :
 
 - **Design & UX/UI** : L'approche visuelle "Cyber-Tech", l'ergonomie, les micro-interactions et le design global ont été pensés et conçus avec l'apport inestimable de l'équipe **[LaboGraphie](https://labographie.vercel.app)**. Leur expertise a permis de transformer un simple portail en une expérience utilisateur premium.
-- **Développement** : Équipe technique Security IT.
+- **Développement** : Réalisé avec le concours de **NDE Jordan** et **brinda 206**, contributeurs clés du projet sur GitHub.
