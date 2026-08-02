@@ -1218,16 +1218,18 @@ html[data-theme="light"] .skeleton-card::before {
 }
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
 .modal {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  background: rgba(15, 23, 42, 0.85); /* Glassmorphism background */
+  border: 1px solid rgba(2, 132, 199, 0.3);
+  border-radius: 12px;
   width: 90%;
   max-width: 680px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 20px rgba(2, 132, 199, 0.15);
   transform: scale(0.95) translateY(10px);
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .modal-overlay.open .modal { transform: scale(1) translateY(0); }
 .modal-header {
@@ -1235,13 +1237,89 @@ html[data-theme="light"] .skeleton-card::before {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   position: sticky;
   top: 0;
-  background: var(--surface);
+  background: rgba(15, 23, 42, 0.95);
   z-index: 10;
+  backdrop-filter: blur(10px);
 }
-.modal-header h3 { font-size: 20px; font-weight: 700; margin: 0; }
+.modal-header h3 { font-size: 20px; font-weight: 700; margin: 0; color: #fff; }
+
+/* ---------- FORM STEPPER ---------- */
+.form-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.form-stepper::before {
+  content: '';
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: var(--line-soft);
+  z-index: 0;
+}
+.form-stepper .step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+.form-stepper .step .step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 2px solid var(--line);
+  transition: all 0.3s ease;
+}
+.form-stepper .step.active, .form-stepper .step.completed { color: var(--info); }
+.form-stepper .step.active .step-num {
+  background: rgba(2, 132, 199, 0.2);
+  border-color: var(--info);
+  color: var(--info);
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.4);
+}
+.form-stepper .step.completed .step-num {
+  background: var(--info);
+  border-color: var(--info);
+  color: #fff;
+}
+
+/* ---------- MULTI-STEP FORM ---------- */
+.multi-step .form-step {
+  display: none;
+  animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.multi-step .form-step.active {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+@keyframes fadeInStep {
+  from { opacity: 0; transform: translateX(15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 
 /* ---------- MEDIA UPLOAD ZONE ---------- */
 .media-upload-zone {
@@ -1315,19 +1393,19 @@ html[data-theme="light"] .skeleton-card::before {
 .publish-form { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
 .form-row { display: flex; flex-direction: column; gap: 8px; }
 .form-row.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.form-row label, .field-label { font-size: 13.5px; font-weight: 600; color: var(--ink-soft); }
+.form-row label, .field-label { font-size: 13.5px; font-weight: 600; color: #CBD5E1; }
 .form-row input[type="text"],
 .form-row input[type="date"],
 .form-row input[type="email"],
 .form-row textarea,
 .form-row select {
   padding: 11px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--line);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
   font-size: 14px;
-  background: var(--surface-alt);
-  color: var(--ink);
-  transition: var(--transition);
+  background: rgba(0,0,0,0.2);
+  color: #F8FAFC;
+  transition: all 0.2s ease;
 }
 .form-row input:focus, .form-row textarea:focus, .form-row select:focus {
   outline: none;

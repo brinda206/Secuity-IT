@@ -744,24 +744,158 @@ document.addEventListener('DOMContentLoaded', () => {
   const posterFieldWrap = document.getElementById('posterFieldWrap');
   const pDate = document.getElementById('pDate');
 
-  function openPublishModal() {
-    publishOverlay.classList.add('open');
-    if (pDate && !pDate.value) {
-      pDate.value = new Date().toISOString().slice(0, 10);
-    }
+  /* --- MULTI-STEP WIZARD LOGIC --- */
+  const formSteps = document.querySelectorAll('.form-step');
+  const stepperSteps = document.querySelectorAll('.form-stepper .step');
+  const nextBtns = document.querySelectorAll('.next-step');
+  const prevBtns = document.querySelectorAll('.prev-step');
+
+  function updateWizard(targetStepIndex) {
+    formSteps.forEach(step => {
+      if (parseInt(step.dataset.step) === targetStepIndex) {
+        step.classList.add('active');
+      } else {
+        step.classList.remove('active');
+      }
+    });
+
+    stepperSteps.forEach(step => {
+      const stepIdx = parseInt(step.dataset.step);
+      step.classList.remove('active', 'completed');
+      if (stepIdx === targetStepIndex) {
+        step.classList.add('active');
+      } else if (stepIdx < targetStepIndex) {
+        step.classList.add('completed');
+      }
+    });
   }
+
+  nextBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Validate current step inputs
+      const currentStep = btn.closest('.form-step');
+      const inputs = currentStep.querySelectorAll('input, select, textarea');
+      let isValid = true;
+      for (const input of inputs) {
+        if (!input.checkValidity()) {
+          input.reportValidity();
+          isValid = false;
+          break;
+        }
+      }
+      
+      if (isValid) {
+        const next = parseInt(btn.dataset.next);
+        updateWizard(next);
+      }
+    });
+  });
+
+  prevBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const prev = parseInt(btn.dataset.prev);
+      updateWizard(prev);
+    });
+  });
+
+  function resetWizard() {
+    updateWizard(1);
+    resetFeedback();
+    publishForm.reset();
+    resetDropZone(document.getElementById('mediaDropZone'));
+    resetDropZone(document.getElementById('posterDropZone'));
+    if (pDate) pDate.value = new Date().toISOString().slice(0, 10);
+    // Trigger change on radio to reset UI
+    document.querySelector('input[name="mediaType"][value="video"]').checked = true;
+    document.querySelector('input[name="mediaType"][value="video"]').dispatchEvent(new Event('change'));
+  }
+
   function closePublishModal() {
     publishOverlay?.classList.remove('open');
   }
 
-  openPublishBtn?.addEventListener('click', openPublishModal);
+  openPublishBtn?.addEventListener('click', () => {
+    resetWizard();
+    publishOverlay.classList.add('open');
+  });
+  
   publishCloseBtn?.addEventListener('click', closePublishModal);
   publishCancelBtn?.addEventListener('click', closePublishModal);
   publishOverlay?.addEventListener('click', (e) => { if (e.target === publishOverlay) closePublishModal(); });
 
+  /* --- DRAG & DROP LOGIC --- */
+  function setupDropZone(zoneId, inputId, previewId) {
+    const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    if (!zone || !input || !preview) return;
+
+    const placeholder = zone.querySelector('.upload-placeholder');
+    const overlay = zone.querySelector('.media-preview-overlay');
+
+    // Drag events
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      zone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      zone.addEventListener(eventName, () => zone.classList.add('dragover'), false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      zone.addEventListener(eventName, () => zone.classList.remove('dragover'), false);
+    });
+
+    zone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length > 0) {
+        input.files = files;
+        input.dispatchEvent(new Event('change'));
+      }
+    });
+
+    input.addEventListener('change', () => {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const url = URL.createObjectURL(file);
+        
+        preview.innerHTML = '';
+        if (file.type.startsWith('video/')) {
+          const video = document.createElement('video');
+          video.src = url;
+          video.controls = true;
+          preview.appendChild(video);
+        } else if (file.type.startsWith('image/')) {
+          const img = document.createElement('img');
+          img.src = url;
+          preview.appendChild(img);
+        }
+        
+        preview.style.display = 'block';
+        if (overlay) overlay.style.display = 'flex';
+        if (placeholder) placeholder.style.opacity = '0';
+      }
+    });
+  }
+
+  function resetDropZone(zone) {
+    if (!zone) return;
+    const preview = zone.querySelector('.media-preview');
+    const placeholder = zone.querySelector('.upload-placeholder');
+    const overlay = zone.querySelector('.media-preview-overlay');
+    if (preview) { preview.innerHTML = ''; preview.style.display = 'none'; }
+    if (placeholder) placeholder.style.opacity = '1';
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  setupDropZone('mediaDropZone', 'pMedia', 'mediaPreview');
+  setupDropZone('posterDropZone', 'pPoster', 'posterPreview');
+
   // Adapter le champ "média" selon vidéo / photo(s)
   mediaTypeRadios.forEach(radio => {
     radio.addEventListener('change', () => {
+      resetDropZone(document.getElementById('mediaDropZone'));
       if (radio.value === 'video' && radio.checked) {
         mediaLabel.textContent = 'Fichier vidéo (.mp4, .webm — 200 Mo max)';
         pMedia.accept = 'video/mp4,video/webm,video/quicktime';
