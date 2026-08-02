@@ -113,10 +113,10 @@
   },
   {
     "id": "guide-segmentation-reseau-domestique",
-    "title": "Guide pratique&nbsp;: segmenter son réseau domestique en cinq étapes simples",
+    "title": "Guide pratique & bsp: segmenter son réseau domestique en cinq étapes simples",
     "excerpt": "Séparer objets connectés, invités et postes de travail réduit fortement la surface d'attaque en cas de compromission.",
     "category": "defense",
-    "date": "2026-08-01T15:56:54.530Z",
+    "date": "2026-08-01",
     "mediaType": "image",
     "mediaUrl": "assets/cyber_network.png",
     "posterUrl": null,

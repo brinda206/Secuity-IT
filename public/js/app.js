@@ -59,8 +59,30 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ===================== MENU MOBILE ===================== */
   const menuToggle = document.querySelector('.menu-toggle');
   const mainNav = document.querySelector('.main-nav');
+  
+  // Créer l'overlay dynamiquement s'il n'existe pas
+  let menuOverlay = document.querySelector('.menu-overlay');
+  if (!menuOverlay) {
+    menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    document.body.appendChild(menuOverlay);
+  }
+
   menuToggle?.addEventListener('click', () => {
-    mainNav?.classList.toggle('open');
+    const isOpen = mainNav?.classList.toggle('open');
+    if (isOpen) {
+      menuOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden'; // Empêcher le défilement
+    } else {
+      menuOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  menuOverlay.addEventListener('click', () => {
+    mainNav?.classList.remove('open');
+    menuOverlay.classList.remove('open');
+    document.body.style.overflow = '';
   });
 
   /* ===================== FILTRES & RECHERCHE ===================== */
@@ -187,18 +209,30 @@ document.addEventListener('DOMContentLoaded', () => {
         .filter(title => title.toLowerCase().includes(q))
         .slice(0, 5); // top 5
 
+      searchSuggestions.style.display = 'block';
+
       if (matches.length > 0) {
-        searchSuggestions.innerHTML = matches.map(m => 
-          `<div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid var(--line); font-size: 0.9rem;" 
-                onmouseover="this.style.background='var(--line)'" 
-                onmouseout="this.style.background='transparent'"
-                onclick="document.getElementById('searchInput').value = this.innerText; document.getElementById('searchInput').dispatchEvent(new Event('input')); document.getElementById('searchSuggestions').style.display='none';">
-            ${escapeHtml(m)}
-          </div>`
-        ).join('');
-        searchSuggestions.style.display = 'block';
+        searchSuggestions.innerHTML = matches.map(m => {
+          // Surbrillance du texte recherché
+          const regex = new RegExp(`(${q})`, 'gi');
+          const highlightedTitle = escapeHtml(m).replace(regex, '<span class="highlight">$1</span>');
+          
+          return `<div class="suggestion-item" data-val="${escapeHtml(m)}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5; flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <span style="flex-grow:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${highlightedTitle}</span>
+          </div>`;
+        }).join('');
+        
+        searchSuggestions.querySelectorAll('.suggestion-item').forEach(item => {
+          item.addEventListener('click', () => {
+            searchInput.value = item.dataset.val;
+            searchInput.dispatchEvent(new Event('input'));
+            searchSuggestions.style.display = 'none';
+            searchInput.blur();
+          });
+        });
       } else {
-        searchSuggestions.style.display = 'none';
+        searchSuggestions.innerHTML = `<div class="suggestion-empty">Aucun résultat pour "${escapeHtml(currentSearchQuery)}"</div>`;
       }
     });
 
@@ -207,6 +241,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!e.target.closest('.search-bar')) {
         searchSuggestions.style.display = 'none';
       }
+    });
+
+    // Afficher les suggestions au clic sur l'input s'il n'est pas vide
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.trim() !== '') {
+        searchSuggestions.style.display = 'block';
+      }
+    });
+
+    // Raccourci clavier Ctrl+K ou Cmd+K
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    // Bouton de suppression
+    const clearBtn = document.getElementById('searchClearBtn');
+    clearBtn?.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+      searchInput.focus();
     });
 
     // Branchement du bouton de la barre de navigation
@@ -863,6 +920,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- Global Share Dropdown (Home Page) ---
+  const globalShareDropdown = document.createElement('div');
+  globalShareDropdown.className = 'share-dropdown';
+  globalShareDropdown.id = 'globalShareDropdown';
+  globalShareDropdown.innerHTML = `
+    <button class="share-option" data-network="whatsapp">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.57c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </button>
+    <button class="share-option" data-network="facebook">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      Facebook
+    </button>
+    <button class="share-option" data-network="instagram">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+      Instagram
+    </button>
+    <button class="share-option" data-network="tiktok">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+      TikTok
+    </button>
+    <hr class="share-divider">
+    <button class="share-option" data-network="copy">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+      Copier le lien
+    </button>
+  `;
+  document.body.appendChild(globalShareDropdown);
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#globalShareDropdown') && !e.target.closest('.share-btn')) {
+      globalShareDropdown.classList.remove('open');
+    }
+  });
+
+  globalShareDropdown.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.share-option');
+    if (!btn) return;
+    
+    e.stopPropagation();
+    const network = btn.dataset.network;
+    const url = encodeURIComponent(globalShareDropdown.dataset.url);
+    const title = encodeURIComponent(globalShareDropdown.dataset.title);
+    
+    if (network === 'whatsapp') {
+      window.open(`https://api.whatsapp.com/send?text=${title} - ${url}`, '_blank');
+      globalShareDropdown.classList.remove('open');
+    } else if (network === 'facebook') {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+      globalShareDropdown.classList.remove('open');
+    } else {
+      try {
+        await navigator.clipboard.writeText(decodeURIComponent(url));
+        const orig = btn.innerHTML;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Lien copié !`;
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          globalShareDropdown.classList.remove('open');
+        }, 1500);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  });
+
   /* ===================== PARTAGE, SUPPRESSION & MODIFICATION ===================== */
   grid?.addEventListener('click', async (e) => {
     
@@ -873,16 +995,26 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       const id = shareBtn.dataset.id;
       const url = `${window.location.origin}/article.html?id=${id}`;
-      try {
-        await navigator.clipboard.writeText(url);
-        
-        // Petit feedback visuel rapide sur le bouton
-        const originalHTML = shareBtn.innerHTML;
-        shareBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        setTimeout(() => { shareBtn.innerHTML = originalHTML; }, 2000);
-      } catch (err) {
-        console.error('Erreur lors de la copie', err);
+      const title = shareBtn.closest('.card')?.querySelector('h3')?.textContent || 'Security IT';
+
+      // Position the dropdown below the button
+      const rect = shareBtn.getBoundingClientRect();
+      globalShareDropdown.style.position = 'fixed';
+      globalShareDropdown.style.top = `${rect.bottom + 8}px`;
+      
+      // Prevent going offscreen
+      if (rect.right - 200 < 10) {
+        globalShareDropdown.style.left = `${rect.left}px`;
+        globalShareDropdown.style.right = 'auto';
+      } else {
+        globalShareDropdown.style.left = 'auto';
+        globalShareDropdown.style.right = `${window.innerWidth - rect.right}px`;
       }
+
+      globalShareDropdown.dataset.url = url;
+      globalShareDropdown.dataset.title = title;
+      
+      globalShareDropdown.classList.toggle('open');
       return;
     }
     const deleteBtn = e.target.closest('.delete-btn');
@@ -945,10 +1077,66 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('eBody').value = item.body || '';
     document.getElementById('eCaption').value = item.caption || '';
     
+    // Gérer l'aperçu du média existant
+    const previewContainer = document.getElementById('eMediaPreviewContainer');
+    const placeholder = document.getElementById('eMediaPlaceholder');
+    const mediaInput = document.getElementById('eMedia');
+    
+    // Reset l'input file
+    mediaInput.value = '';
+    
+    if (item.mediaUrl) {
+      previewContainer.style.display = 'block';
+      placeholder.style.opacity = '0'; // On cache le placeholder visuellement mais on garde l'espace
+      
+      const isVideo = item.mediaUrl.endsWith('.mp4') || item.mediaUrl.endsWith('.webm');
+      const mediaHtml = isVideo 
+        ? `<video src="${item.mediaUrl}" muted loop autoplay playsinline></video>`
+        : `<img src="${item.mediaUrl}" alt="Aperçu du média">`;
+        
+      previewContainer.innerHTML = `
+        ${mediaHtml}
+        <div class="media-preview-overlay">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Remplacer le média</span>
+        </div>
+      `;
+    } else {
+      previewContainer.style.display = 'none';
+      previewContainer.innerHTML = '';
+      placeholder.style.opacity = '1';
+    }
+
     if (editFeedback) { editFeedback.textContent = ''; editFeedback.className = 'form-feedback'; }
     
     editOverlay?.classList.add('open');
   }
+
+  // Gérer l'aperçu dynamique lors de la sélection d'un nouveau fichier
+  document.getElementById('eMedia')?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const previewContainer = document.getElementById('eMediaPreviewContainer');
+    const placeholder = document.getElementById('eMediaPlaceholder');
+    
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      const isVideo = file.type.startsWith('video/');
+      previewContainer.style.display = 'block';
+      placeholder.style.opacity = '0';
+      
+      const mediaHtml = isVideo 
+        ? `<video src="${fileUrl}" muted loop autoplay playsinline></video>`
+        : `<img src="${fileUrl}" alt="Aperçu du nouveau média">`;
+        
+      previewContainer.innerHTML = `
+        ${mediaHtml}
+        <div class="media-preview-overlay">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span>Changer de fichier</span>
+        </div>
+      `;
+    }
+  });
 
   editForm?.addEventListener('submit', async (e) => {
     e.preventDefault();

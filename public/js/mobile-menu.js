@@ -6,11 +6,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const mainNav = document.querySelector('.main-nav');
   if (!menuToggle || !mainNav) return;
 
+  // Enlever les styles en ligne pour utiliser la classe CSS
+  mainNav.style.cssText = '';
+  
+  // Créer l'overlay dynamiquement s'il n'existe pas
+  let menuOverlay = document.querySelector('.menu-overlay');
+  if (!menuOverlay) {
+    menuOverlay = document.createElement('div');
+    menuOverlay.className = 'menu-overlay';
+    document.body.appendChild(menuOverlay);
+  }
+
   menuToggle.addEventListener('click', () => {
-    const isOpen = mainNav.style.display === 'flex';
-    mainNav.style.display = isOpen ? 'none' : 'flex';
-    mainNav.style.cssText += isOpen
-      ? ''
-      : 'position:absolute; top:72px; left:0; right:0; flex-direction:column; background:var(--surface); padding:12px 24px; border-bottom:1px solid var(--line); align-items:flex-start;';
+    const isOpen = mainNav.classList.toggle('open');
+    if (isOpen) {
+      menuOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      menuOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  menuOverlay.addEventListener('click', () => {
+    mainNav.classList.remove('open');
+    menuOverlay.classList.remove('open');
+    document.body.style.overflow = '';
   });
 });

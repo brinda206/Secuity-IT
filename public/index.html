@@ -15,7 +15,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 
 <body>
@@ -223,9 +223,8 @@
     </section>
 
     <section class="wrap">
-      <div class="filters-container"
-        style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
-        <div class="filters" id="filters" style="margin-bottom: 0;">
+      <div class="filters-container">
+        <div class="filters" id="filters">
           <button class="chip active" data-filter="all">Toutes les actualités</button>
           <button class="chip" data-filter="interventions">Interventions</button>
           <button class="chip" data-filter="reportage-terrain">seminaire terrain</button>
@@ -235,18 +234,19 @@
           <button class="chip" data-filter="vie-privee">Vie privée</button>
           <button class="chip" data-filter="reglementation">Réglementation</button>
         </div>
-        <div class="search-bar" style="position: relative; flex-grow: 1; max-width: 300px;">
-          <input type="text" id="searchInput" placeholder="Rechercher un article..." autocomplete="off"
-            style="width: 100%; padding: 0.5rem 1rem 0.5rem 2.5rem; border-radius: 20px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);">
-          <svg
-            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); pointer-events: none;"
-            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="search-bar">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <div id="searchSuggestions" class="suggestions-box"
-            style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; max-height: 200px; overflow-y: auto;">
+          <input type="text" id="searchInput" placeholder="Rechercher un article..." autocomplete="off">
+          <div class="search-shortcuts" id="searchShortcuts">
+            <span class="key">Ctrl</span><span class="key">K</span>
           </div>
+          <button class="clear-btn" id="searchClearBtn" aria-label="Effacer la recherche">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <div id="searchSuggestions" class="suggestions-box"></div>
         </div>
       </div>
 
@@ -518,11 +518,25 @@
         </div>
 
         <div class="form-row">
-          <label for="eMedia" style="display:flex; justify-content:space-between;">
-            Nouveau média (Optionnel)
-            <span style="font-size:11px; color:var(--ink-faint); font-weight:normal;">Remplacera l'ancien</span>
+          <label style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+            Média de l'article (Image ou Vidéo)
+            <span style="font-size:11px; color:var(--ink-faint); font-weight:normal;">Glissez un fichier pour remplacer</span>
           </label>
-          <input type="file" id="eMedia" name="media" accept="image/*,video/*">
+          <div class="media-upload-zone" id="eMediaZone">
+            <div class="upload-placeholder" id="eMediaPlaceholder">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:8px; color:var(--info);">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Cliquez ou glissez un fichier ici</span>
+              <small>Images (.jpg, .png, .webp) ou Vidéos (.mp4) - Max 200 Mo</small>
+            </div>
+            <div class="media-preview" id="eMediaPreviewContainer" style="display: none;">
+              <!-- L'aperçu sera injecté ici via app.js -->
+            </div>
+            <input type="file" id="eMedia" name="media" accept="image/*,video/*" class="hidden-file-input">
+          </div>
         </div>
 
         <div class="form-feedback" id="editFeedback" role="status"></div>
@@ -564,7 +578,7 @@
   <script src="js/theme.js"></script>
   <script src="js/lightbox.js"></script>
   <script src="js/articles-data.js"></script>
-  <script src="js/app.js" defer></script>
+  <script src="js/app.js?v=2" defer></script>
 </body>
 
 </html>
