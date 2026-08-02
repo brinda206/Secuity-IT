@@ -733,7 +733,7 @@ app.use((err, req, res, next) => {
 });
 
 // --- Route pour récupérer les abonnés newsletter ---
-app.get("/api/admin/newsletter", adminAuth, (req, res) => {
+app.get("/api/admin/newsletter", requireAdmin, (req, res) => {
   res.json(readNewsletter());
 });
 

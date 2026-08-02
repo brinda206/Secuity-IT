@@ -1332,6 +1332,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
+  // Utilitaire pour afficher des notifications (Toast)
+  function showToast(message, isError = false) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translate(-50%, 20px)';
+    toast.style.backgroundColor = isError ? 'var(--critical)' : 'var(--safe)';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '8px';
+    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+    toast.style.zIndex = '10000';
+    toast.style.fontFamily = 'Inter, sans-serif';
+    toast.style.fontSize = '14.5px';
+    toast.style.fontWeight = '500';
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    
+    document.body.appendChild(toast);
+    
+    // Animation d'entrée
+    setTimeout(() => { 
+      toast.style.opacity = '1'; 
+      toast.style.transform = 'translate(-50%, 0)'; 
+    }, 10);
+    
+    // Disparition après 3 secondes
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translate(-50%, 20px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
   // Fonction d'exportation de la newsletter
   document.getElementById('adminNewsletterBtn')?.addEventListener('click', async () => {
     try {
@@ -1342,7 +1378,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const emails = await res.json();
       if (!emails || emails.length === 0) {
-        alert("La liste d'abonnés est vide.");
+        showToast("La liste d'abonnés est actuellement vide.", true);
         return;
       }
       const csvContent = "data:text/csv;charset=utf-8," + "Email\n" + emails.join("\n");
@@ -1353,8 +1389,10 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      
+      showToast("Fichier CSV téléchargé avec succès !");
     } catch (err) {
-      alert(err.message);
+      showToast(err.message, true);
     }
   });
 
