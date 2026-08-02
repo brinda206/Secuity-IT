@@ -70,7 +70,7 @@
           </svg>
           <span>Publier un reportage</span>
         </button>
-        
+
         <button class="btn-secondary" id="adminNewsletterBtn" style="display: none; align-items:center; gap:8px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -244,7 +244,8 @@
           <button class="chip" data-filter="reglementation">Réglementation</button>
         </div>
         <div class="search-bar">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
@@ -253,7 +254,10 @@
             <span class="key">Ctrl</span><span class="key">K</span>
           </div>
           <button class="clear-btn" id="searchClearBtn" aria-label="Effacer la recherche">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
           <div id="searchSuggestions" class="suggestions-box"></div>
         </div>
@@ -429,18 +433,18 @@
               <input type="date" id="pDate" name="date" required>
             </div>
           </div>
-          
+
           <div class="form-row two-col">
             <div>
               <label for="pAuthor">Auteur</label>
-              <input type="text" id="pAuthor" name="author" placeholder="Ex. NDE Jordan" required>
+              <input type="text" id="pAuthor" name="author" placeholder="Ex.Nadroj Dabrin" required>
             </div>
             <div>
               <label for="pTags">Tags (séparés par des virgules)</label>
               <input type="text" id="pTags" name="tags" placeholder="Ex. ransomware, hôpital, guide">
             </div>
           </div>
-          
+
           <div class="form-actions">
             <button type="button" class="btn-ghost" id="publishCancel">Annuler</button>
             <button type="button" class="btn-primary next-step" data-next="2">Suivant</button>
@@ -458,7 +462,8 @@
           <div class="form-row">
             <label for="pBody" style="display:flex; justify-content:space-between;">
               Texte complet de l'article (optionnel)
-              <span class="mono" style="font-weight:400; opacity:0.6; font-size:12px;">Prend en charge les sauts de ligne</span>
+              <span class="mono" style="font-weight:400; opacity:0.6; font-size:12px;">Prend en charge les sauts de
+                ligne</span>
             </label>
             <textarea id="pBody" name="body" rows="8" maxlength="4000" style="resize: vertical; min-height: 150px;"
               placeholder="Le récit complet du reportage..."></textarea>
@@ -487,9 +492,15 @@
           <div class="form-row" id="mediaFieldWrap">
             <label id="mediaLabel">Fichier vidéo (.mp4, .webm — 200 Mo max)</label>
             <div class="media-upload-zone" id="mediaDropZone">
-              <input type="file" id="pMedia" name="media" accept="video/mp4,video/webm,video/quicktime" class="hidden-file-input" required>
+              <input type="file" id="pMedia" name="media" accept="video/mp4,video/webm,video/quicktime"
+                class="hidden-file-input" required>
               <div class="upload-placeholder">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:8px; opacity:0.7;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="margin-bottom:8px; opacity:0.7;">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
                 <span>Glissez-déposez le fichier ici</span>
                 <small>ou cliquez pour parcourir</small>
               </div>
@@ -501,9 +512,15 @@
           <div class="form-row" id="posterFieldWrap">
             <label>Image de couverture (optionnelle)</label>
             <div class="media-upload-zone" id="posterDropZone" style="min-height:120px;">
-              <input type="file" id="pPoster" name="poster" accept="image/png,image/jpeg,image/webp" class="hidden-file-input">
+              <input type="file" id="pPoster" name="poster" accept="image/png,image/jpeg,image/webp"
+                class="hidden-file-input">
               <div class="upload-placeholder">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:4px; opacity:0.7;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  style="margin-bottom:4px; opacity:0.7;">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
                 <span>Glissez-déposez la miniature</span>
               </div>
               <div class="media-preview" id="posterPreview" style="display:none;"></div>
@@ -583,13 +600,14 @@
         </div>
 
         <div class="form-row">
-          <label style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+          <label class="media-label-row">
             Média de l'article (Image ou Vidéo)
             <span style="font-size:11px; color:var(--ink-faint); font-weight:normal;">Glissez un fichier pour remplacer</span>
           </label>
           <div class="media-upload-zone" id="eMediaZone">
             <div class="upload-placeholder" id="eMediaPlaceholder">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom:8px; color:var(--info);">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="margin-bottom:8px; color:var(--info);">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
@@ -638,31 +656,43 @@
         </div>
       </form>
     </div>
-</div>
+  </div>
 
-<!-- Modal de confirmation de suppression -->
-<div class="modal-overlay" id="deleteOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Supprimer l'article</h3>
-      <button class="icon-btn" id="deleteClose" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="modal-body">
-      <p style="margin-bottom: 12px; font-size: 15px; color: var(--ink);">Êtes-vous sûr de vouloir supprimer cet article définitivement ?</p>
-      <p style="font-size: 13.5px; color: var(--critical); font-weight: 500; display: flex; align-items: center; gap: 6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Cette action est irréversible et détruira les médias associés.
-      </p>
-      <input type="hidden" id="deleteId">
-    </div>
-    <div class="modal-footer" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px;">
-      <button type="button" class="btn-secondary" id="deleteCancel">Annuler</button>
-      <button type="button" class="btn-primary" style="background: var(--critical); border-color: var(--critical);" id="deleteConfirmBtn">Supprimer définitivement</button>
+  <!-- Modal de confirmation de suppression -->
+  <div class="modal-overlay" id="deleteOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Supprimer l'article</h3>
+        <button class="icon-btn" id="deleteClose" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 12px; font-size: 15px; color: var(--ink);">Êtes-vous sûr de vouloir supprimer cet
+          article définitivement ?</p>
+        <p
+          style="font-size: 13.5px; color: var(--critical); font-weight: 500; display: flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          Cette action est irréversible et détruira les médias associés.
+        </p>
+        <input type="hidden" id="deleteId">
+      </div>
+      <div class="modal-footer"
+        style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; border-top: 1px solid var(--line); padding-top: 20px;">
+        <button type="button" class="btn-secondary" id="deleteCancel">Annuler</button>
+        <button type="button" class="btn-primary" style="background: var(--critical); border-color: var(--critical);"
+          id="deleteConfirmBtn">Supprimer définitivement</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="js/theme.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/lightbox.js"></script>
   <script src="js/articles-data.js"></script>
   <script src="js/app.js?v=5" defer></script>

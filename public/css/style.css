@@ -1418,6 +1418,19 @@ html[data-theme="light"] .skeleton-card::before {
   color: var(--ink);
 }
 .form-row textarea { resize: vertical; min-height: 80px; }
+
+/* Label avec sous-titre (ex: Glissez un fichier pour remplacer) */
+.media-label-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
 .form-row input[type="file"] {
   font-size: 13.5px;
   color: var(--ink-soft);
@@ -2156,6 +2169,14 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
   .footer-grid { grid-template-columns: 1fr; }
   .form-row.two-col { grid-template-columns: 1fr; gap: 16px; }
   
+  /* Modales : réduction du padding sur très petit écran */
+  .modal { width: 96%; max-height: 95vh; }
+  .modal-header { padding: 14px 16px; }
+  .modal-header h3 { font-size: 16px; }
+  .publish-form { padding: 16px; gap: 14px; }
+  .form-stepper { padding: 14px 16px 0; }
+  .form-stepper .step { font-size: 10px; }
+
   /* Article page improvements */
   .article-header { padding: 0 0 20px; }
   .article-header h1 { font-size: 26px; line-height: 1.3; }
