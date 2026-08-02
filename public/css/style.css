@@ -83,6 +83,7 @@ html[data-theme="dark"] {
 html { 
   scroll-behavior: smooth; 
   overflow-x: hidden;
+  background-color: var(--bg);
 }
 body {
   margin: 0;
@@ -1451,9 +1452,9 @@ footer p.tagline { font-size: 14px; color: #64748B; max-width: 290px; line-heigh
 footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 footer ul a { font-size: 14.5px; color: #CBD5E1; transition: var(--transition); }
 footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
-.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 28px; font-size: 13px; color: #64748B; font-weight: 500; flex-wrap: wrap; gap: 12px; }
-.footer-bottom .credit a { color: #CBD5E1; text-decoration: underline; text-decoration-color: rgba(203, 213, 225, 0.4); text-underline-offset: 3px; transition: var(--transition); }
-.footer-bottom .credit a:hover { color: var(--info); text-decoration-color: var(--info); }
+.footer-bottom { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding-top: 28px; font-size: 13px; color: #64748B; font-weight: 500; gap: 12px; }
+.footer-bottom .credit a { color: #CBD5E1; text-decoration: underline; text-decoration-color: rgba(203, 213, 225, 0.4); text-underline-offset: 3px; transition: var(--transition); font-weight: 600; }
+.footer-bottom .credit a:hover { color: #FF7A00; text-decoration-color: #FF7A00; }
 
 /* ---------- PAGE ARTICLE COMPLET ---------- */
 .article-wrap { max-width: 840px; margin: 0 auto; padding: 0 24px 80px; }
