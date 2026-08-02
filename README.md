@@ -111,3 +111,12 @@ Deux types de contenus cohabitent :
 - **Hébergement des fichiers** : Stockage local dans `uploads/`. Envisager un stockage objet (AWS S3, Cloudflare R2) car les plateformes comme Vercel ne conservent pas les fichiers statiques générés.
 - **Taille des fichiers** : Limité à 200 Mo par vidéo et 15 Mo par image.
 - **Authentification** : Le mot de passe transitant en clair, le déploiement sous **HTTPS est indispensable**.
+
+---
+
+## 👥 Crédits & Contributeurs
+
+Ce projet n'aurait pas pu voir le jour sans le talent et l'expertise de ses concepteurs :
+
+- **Design & UX/UI** : L'approche visuelle "Cyber-Tech", l'ergonomie, les micro-interactions et le design global ont été pensés et conçus avec l'apport inestimable de l'équipe **[LaboGraphie](https://labographie.vercel.app)**. Leur expertise a permis de transformer un simple portail en une expérience utilisateur premium.
+- **Développement** : Équipe technique Security IT.
