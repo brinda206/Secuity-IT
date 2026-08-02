@@ -25,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join(__dirname, "data", "reportages.json");
 const NEWSLETTER_FILE = path.join(__dirname, "data", "newsletter.json");
+const PENDING_NEWSLETTER_FILE = path.join(__dirname, "data", "pending_newsletter.json");
 const UPLOADS_DIR = path.join(__dirname, "uploads");
 const PUBLIC_DIR = path.join(__dirname, "public");
 
@@ -32,6 +33,7 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, "[]", "utf-8");
 if (!fs.existsSync(NEWSLETTER_FILE)) fs.writeFileSync(NEWSLETTER_FILE, "[]", "utf-8");
+if (!fs.existsSync(PENDING_NEWSLETTER_FILE)) fs.writeFileSync(PENDING_NEWSLETTER_FILE, "{}", "utf-8");
 
 // --- Authentification administrateur ---
 // Volontairement simple : un mot de passe partagé + des jetons en mémoire avec
@@ -94,6 +96,19 @@ function writeNewsletter(list) {
   fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify(list, null, 2), "utf-8");
 }
 
+function readPendingNewsletter() {
+  try {
+    const content = fs.readFileSync(PENDING_NEWSLETTER_FILE, "utf-8");
+    return JSON.parse(content);
+  } catch (err) {
+    return {};
+  }
+}
+
+function writePendingNewsletter(data) {
+  fs.writeFileSync(PENDING_NEWSLETTER_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
 // --- Configuration Email (Nodemailer) ---
 // Utilise un serveur SMTP local de test si aucune variable d'environnement n'est fournie,
 // ou bien le SMTP de votre choix en production.
@@ -119,8 +134,8 @@ async function notifySubscribers(article) {
       to: '"Abonnés Security IT" <newsletter@security-it.example>', // fake 'to', use BCC for privacy
       bcc: bccList,
       subject: `Nouveau reportage : ${article.title}`,
-      text: `Bonjour,\n\nUn nouvel article vient d'être publié sur Security IT :\n\n"${article.title}"\n${article.excerpt}\n\nLisez-le en intégralité ici : ${articleUrl}\n\nÀ bientôt !`,
-      html: `<h2>Un nouvel article a été publié</h2><p><strong>${article.title}</strong></p><p>${article.excerpt}</p><p><a href="${articleUrl}">Lire l'article en ligne</a></p>`
+      text: `Bonjour,\n\nUn nouvel article vient d'être publié sur Security IT :\n\n"${article.title}"\n${article.excerpt}\n\nLisez-le en intégralité ici : ${articleUrl}\n\nPour vous désinscrire : http://localhost:${PORT}/api/newsletter/unsubscribe\nÀ bientôt !`,
+      html: `<h2>Un nouvel article a été publié</h2><p><strong>${article.title}</strong></p><p>${article.excerpt}</p><p><a href="${articleUrl}">Lire l'article en ligne</a></p><hr><p style="font-size:11px; color:#888;">Pour ne plus recevoir ces alertes, <a href="http://localhost:${PORT}/api/newsletter/unsubscribe">désinscrivez-vous ici</a>.</p>`
     });
     console.log(`Notification envoyée à ${subscribers.length} abonnés.`);
   } catch (error) {
@@ -325,7 +340,7 @@ const newsletterLimiter = rateLimit({
   message: { error: "Trop de tentatives d'inscription. Réessayez plus tard." },
 });
 
-app.post("/api/newsletter", newsletterLimiter, (req, res) => {
+app.post("/api/newsletter", newsletterLimiter, async (req, res) => {
   const { email } = req.body;
   
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -337,10 +352,123 @@ app.post("/api/newsletter", newsletterLimiter, (req, res) => {
     return res.status(409).json({ error: "Cet e-mail est déjà inscrit." });
   }
 
-  list.push(email.toLowerCase());
-  writeNewsletter(list);
+  const pending = readPendingNewsletter();
+  const token = randomUUID();
+  pending[token] = {
+    email: email.toLowerCase(),
+    expires: Date.now() + 24 * 60 * 60 * 1000 // 24 heures
+  };
+  writePendingNewsletter(pending);
+
+  const confirmUrl = `http://localhost:${PORT}/api/newsletter/confirm?token=${token}`;
   
-  res.status(201).json({ message: "Inscription confirmée avec succès." });
+  try {
+    await transporter.sendMail({
+      from: '"Security IT" <newsletter@security-it.example>',
+      to: email,
+      subject: `Confirmez votre inscription à la veille Security IT`,
+      text: `Bonjour,\n\nVous avez demandé à vous inscrire à la newsletter Security IT.\nVeuillez cliquer sur le lien suivant pour confirmer votre inscription :\n\n${confirmUrl}\n\nCe lien expirera dans 24 heures. Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail.\n\nÀ bientôt !`,
+      html: `<h2>Confirmation d'inscription</h2>
+             <p>Bonjour,</p>
+             <p>Vous avez demandé à vous inscrire à la newsletter Security IT. Veuillez cliquer sur le bouton ci-dessous pour confirmer votre inscription :</p>
+             <p><a href="${confirmUrl}" style="display:inline-block; padding:10px 20px; background-color:#3488ff; color:white; text-decoration:none; border-radius:4px; font-weight:bold;">Confirmer mon inscription</a></p>
+             <p style="font-size:12px; color:#666; margin-top:20px;">Ce lien expirera dans 24 heures. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.</p>`
+    });
+  } catch (error) {
+    console.error("Erreur d'envoi e-mail de confirmation :", error);
+    // On nettoie le token si l'e-mail ne part pas
+    delete pending[token];
+    writePendingNewsletter(pending);
+    return res.status(500).json({ error: "Le service d'e-mail est momentanément indisponible." });
+  }
+
+  res.status(201).json({ message: "Un e-mail de confirmation vous a été envoyé. Veuillez cliquer sur le lien pour valider." });
+});
+
+app.get("/api/newsletter/confirm", async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send("Jeton manquant.");
+
+  const pending = readPendingNewsletter();
+  const entry = pending[token];
+
+  if (!entry) {
+    return res.status(400).send("Lien de confirmation invalide ou déjà utilisé.");
+  }
+  if (Date.now() > entry.expires) {
+    delete pending[token];
+    writePendingNewsletter(pending);
+    return res.status(400).send("Lien de confirmation expiré. Veuillez vous réinscrire.");
+  }
+
+  const email = entry.email;
+  const list = readNewsletter();
+  
+  if (!list.includes(email)) {
+    list.push(email);
+    writeNewsletter(list);
+  }
+  
+  delete pending[token];
+  writePendingNewsletter(pending);
+
+  // Send Welcome Email
+  try {
+    await transporter.sendMail({
+      from: '"Security IT" <newsletter@security-it.example>',
+      to: email,
+      subject: `Bienvenue dans la veille Security IT !`,
+      text: `Bonjour,\n\nVotre inscription est désormais confirmée. Vous recevrez nos prochaines alertes et dossiers.\n\nPour vous désinscrire, cliquez ici: http://localhost:${PORT}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}\n\nÀ bientôt !`,
+      html: `<h2>Bienvenue sur Security IT !</h2>
+             <p>Votre inscription est désormais confirmée. Vous recevrez nos prochaines alertes et dossiers de veille.</p>
+             <hr>
+             <p style="font-size:11px; color:#888; margin-top:30px;">
+               Pour ne plus recevoir ces e-mails, vous pouvez <a href="http://localhost:${PORT}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}">vous désinscrire à tout moment</a>.
+             </p>`
+    });
+  } catch (err) {
+    console.error("Erreur d'envoi de l'e-mail de bienvenue :", err);
+  }
+
+  res.send(`
+    <html><head><meta charset="utf-8"><title>Inscription confirmée</title></head>
+    <body style="font-family:sans-serif; text-align:center; padding-top:100px; background:#f4f7f6; color:#0e1e2d;">
+      <div style="max-width:500px; margin:auto; background:white; padding:40px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.05);">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#0ea16b" stroke-width="2" style="margin-bottom:20px;">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <h2 style="margin-top:0; font-size:24px;">Inscription confirmée !</h2>
+        <p style="color:#576b85; line-height:1.5;">Votre adresse e-mail a bien été validée.<br>Vous recevrez nos prochaines publications.</p>
+        <a href="/" style="display:inline-block; margin-top:24px; padding:12px 24px; background:#3488ff; color:white; text-decoration:none; border-radius:6px; font-weight:600;">Retour au site</a>
+      </div>
+    </body></html>
+  `);
+});
+
+app.get("/api/newsletter/unsubscribe", (req, res) => {
+  const { email } = req.query;
+  
+  if (email) {
+    let list = readNewsletter();
+    const initialLength = list.length;
+    list = list.filter(e => e !== email.toLowerCase());
+    
+    if (list.length < initialLength) {
+      writeNewsletter(list);
+    }
+  }
+
+  res.send(`
+    <html><head><meta charset="utf-8"><title>Désinscription</title></head>
+    <body style="font-family:sans-serif; text-align:center; padding-top:100px; background:#f4f7f6; color:#0e1e2d;">
+      <div style="max-width:500px; margin:auto; background:white; padding:40px; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.05);">
+        <h2 style="margin-top:0; font-size:24px;">Désinscription prise en compte</h2>
+        <p style="color:#576b85; line-height:1.5;">Vous ne recevrez plus d'e-mails de notre part.</p>
+        <a href="/" style="display:inline-block; margin-top:24px; padding:12px 24px; background:#3488ff; color:white; text-decoration:none; border-radius:6px; font-weight:600;">Retour au site</a>
+      </div>
+    </body></html>
+  `);
 });
 
 app.use(express.static(PUBLIC_DIR));
@@ -602,6 +730,11 @@ app.use((err, req, res, next) => {
     return res.status(400).json({ error: err.message || "Requête invalide." });
   }
   next();
+});
+
+// --- Route pour récupérer les abonnés newsletter ---
+app.get("/api/admin/newsletter", adminAuth, (req, res) => {
+  res.json(readNewsletter());
 });
 
 app.listen(PORT, () => {

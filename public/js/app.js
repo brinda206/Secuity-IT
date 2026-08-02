@@ -1243,6 +1243,11 @@ document.addEventListener('DOMContentLoaded', () => {
     adminLoginBtn?.classList.toggle('hidden', isAdmin);
     adminLogoutBtn?.classList.toggle('hidden', !isAdmin);
     
+    const adminNewsletterBtn = document.getElementById('adminNewsletterBtn');
+    if (adminNewsletterBtn) {
+      adminNewsletterBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+    }
+    
     document.querySelectorAll('.admin-actions').forEach(el => {
       el.classList.toggle('hidden', !isAdmin);
     });
@@ -1326,5 +1331,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, 1000);
   }
+
+  // Fonction d'exportation de la newsletter
+  document.getElementById('adminNewsletterBtn')?.addEventListener('click', async () => {
+    try {
+      const res = await fetch('/api/admin/newsletter', { headers: authHeaders() });
+      if (!res.ok) {
+        if (res.status === 401) { clearAdminToken(); refreshAdminUI(); }
+        throw new Error("Erreur de récupération des abonnés");
+      }
+      const emails = await res.json();
+      if (!emails || emails.length === 0) {
+        alert("La liste d'abonnés est vide.");
+        return;
+      }
+      const csvContent = "data:text/csv;charset=utf-8," + "Email\n" + emails.join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "abonnes_newsletter.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 
 });
