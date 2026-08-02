@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Erreur : ' + err.message);
     }
   });
-  document.getElementById('reportagesGrid')?.addEventListener('click', async (e) => {
+  document.getElementById('articlesGrid')?.addEventListener('click', async (e) => {
     // SUPPRESSION
     const deleteBtn = e.target.closest('.delete-btn');
     if (deleteBtn) {

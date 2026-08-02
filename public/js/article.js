@@ -60,6 +60,61 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>`;
   }
 
+  function setupShareButton(articleTitle) {
+    const shareBtn = document.getElementById('artShareBtn');
+    const shareDropdown = document.getElementById('shareDropdown');
+    
+    if (shareBtn && shareDropdown) {
+      // Nettoyer les anciens écouteurs pour éviter les doublons si re-rendu
+      const newShareBtn = shareBtn.cloneNode(true);
+      shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+      
+      newShareBtn.addEventListener('click', (e) => {
+        shareDropdown.classList.toggle('open');
+        e.stopPropagation();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.share-container')) {
+          shareDropdown.classList.remove('open');
+        }
+      });
+
+      document.querySelectorAll('.share-option').forEach(btn => {
+        // Clone for safe replacement
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const network = newBtn.dataset.network;
+          const url = encodeURIComponent(window.location.href);
+          const title = encodeURIComponent(articleTitle || 'Security IT');
+          
+          if (network === 'whatsapp') {
+            window.open(`https://api.whatsapp.com/send?text=${title} - ${url}`, '_blank');
+            shareDropdown.classList.remove('open');
+          } else if (network === 'facebook') {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+            shareDropdown.classList.remove('open');
+          } else {
+            try {
+              await navigator.clipboard.writeText(window.location.href);
+              const orig = newBtn.innerHTML;
+              newBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Lien copié !`;
+              setTimeout(() => {
+                newBtn.innerHTML = orig;
+                shareDropdown.classList.remove('open');
+              }, 1500);
+            } catch (err) {
+              console.error(err);
+            }
+          }
+        });
+      });
+    }
+  }
+
   function renderStaticArticle(article) {
     pageTitle.textContent = `${article.title} — Security IT`;
     
@@ -120,6 +175,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="article-tags">
         <span class="tag-pill ${article.severity}">${escapeHtml(article.categoryLabel)}</span>
       </div>`;
+      
+    setupShareButton(article.title);
   }
 
   function renderReportageArticle(item) {
@@ -244,54 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       initArticleCarousel();
     }
 
-    const shareBtn = document.getElementById('artShareBtn');
-    const shareDropdown = document.getElementById('shareDropdown');
-    
-    if (shareBtn && shareDropdown) {
-      // Nettoyer les anciens écouteurs pour éviter les doublons si re-rendu
-      const newShareBtn = shareBtn.cloneNode(true);
-      shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
-      
-      newShareBtn.addEventListener('click', (e) => {
-        shareDropdown.classList.toggle('open');
-        e.stopPropagation();
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.share-container')) {
-          shareDropdown.classList.remove('open');
-        }
-      });
-
-      document.querySelectorAll('.share-option').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const network = btn.dataset.network;
-          const url = encodeURIComponent(window.location.href);
-          const title = encodeURIComponent(item ? item.title : (article ? article.title : 'Security IT'));
-          
-          if (network === 'whatsapp') {
-            window.open(`https://api.whatsapp.com/send?text=${title} - ${url}`, '_blank');
-            shareDropdown.classList.remove('open');
-          } else if (network === 'facebook') {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
-            shareDropdown.classList.remove('open');
-          } else {
-            try {
-              await navigator.clipboard.writeText(window.location.href);
-              const orig = btn.innerHTML;
-              btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--safe)" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Lien copié !`;
-              setTimeout(() => {
-                btn.innerHTML = orig;
-                shareDropdown.classList.remove('open');
-              }, 1500);
-            } catch (err) {
-              console.error(err);
-            }
-          }
-        });
-      });
-    }
+    setupShareButton(item.title);
 
     const delBtn = document.getElementById('artDelBtn');
     if (delBtn) {
