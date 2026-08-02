@@ -2184,6 +2184,11 @@ footer ul a:hover { color: var(--brand-sky); transform: translateX(2px); }
   .about-section { margin-bottom: 40px; }
   .about-section h2 { font-size: 24px; }
   .about-section .section-lead { font-size: 15px; }
+  
+  /* Ajustement de la liste des services (A propos) sur mobile */
+  .service-row { flex-direction: column; padding: 16px; gap: 12px; }
+  .service-row .cat-icon { margin-top: 0; }
+  
   .contact-band { padding: 24px; }
   
   .back-link {
